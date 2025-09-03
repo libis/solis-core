@@ -53,8 +53,6 @@ module Solis
       @version_counter ||= model[:version_counter] || 0
       @description ||= model[:description] || "No description"
 
-      puts @graph.dump(:ttl)
-
       @plurals = model[:plurals] || {}
 
       @parser = SHACLParser.new(@graph)
