@@ -142,15 +142,17 @@ class TestReader < Minitest::Test
     config = {
       store: Solis::Store::Memory.new(),
       model: {
-        prefix: 'ex',
-        namespace: 'http://example.org/',
+        # version_counter: 200,
+        prefix: 'bibo',
+        namespace: 'http://purl.org/ontology/bibo/',
         uri: 'file://test/resources/bibo_entities.json',
         content_type: 'application/json'}
     }
     solis = Solis.new(config)
-    puts solis.model.version
-    puts solis.model.version_counter
-    puts solis.model.description
+    pp solis.model.title
+    pp solis.model.version
+    pp solis.model.version_counter
+    pp solis.model.description
   end
 
 end
