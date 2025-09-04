@@ -48,10 +48,10 @@ module Solis
       @content_type = model[:content_type]
       @store = params[:store] || nil
 
-      @title ||= model[:title] || "No Title"
-      @version ||= model[:version] || "0.1"
-      @version_counter ||= model[:version_counter] || 0
-      @description ||= model[:description] || "No description"
+      self.title ||= model[:title] || "No Title"
+      self.version ||= model[:version] || "0.1"
+      self.version_counter ||= model[:version_counter] || 0
+      self.description ||= model[:description] || "No description"
 
       @plurals = model[:plurals] || {}
 
@@ -153,7 +153,8 @@ module Solis
     end
 
     def version_counter
-      _get_object_for_preficate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION))# || 0
+      s = _get_object_for_preficate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION))# || 0
+      s&.to_i
     end
 
     def version_counter=(version_counter)
@@ -277,7 +278,7 @@ module Solis
       object = [object] unless object.is_a?(Array)
 
       object.each do |o|
-        if o =~ /^http/
+        if o.is_a?(String) && o =~ /^http/
           object = RDF::URI(o)
         else
           object = language ? RDF::Literal(o, language: language) : RDF::Literal(o)
