@@ -15,8 +15,8 @@ dc:AgentShape a shacl:NodeShape;
   shacl:name "Agent";
   shacl:targetClass dc:Agent .
 
-bibo: dc:title "The Bibliographic Ontology",
-    """The Bibliographic Ontology describes
+bibo: dc:title "The Bibliographic Ontology";
+  dc:description """The Bibliographic Ontology describes
 bibliographic things on the semantic Web in RDF.  This ontology can be
 used as a citation ontology, as a document classification ontology, or
 simply as a way to describe any kind of document in RDF. It has been
