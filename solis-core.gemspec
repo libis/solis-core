@@ -3,22 +3,22 @@
 require_relative "lib/solis/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "solis"
+  spec.name = "solis-core"
   spec.version = Solis::VERSION
-  spec.authors = ["Mehmet Celik"]
-  spec.email = ["mehmet@celik.be"]
+  spec.authors = ["Mehmet Celik", "Davide Monari"]
+  spec.email = ["mehmet@celik.be", "davide.monari@kuleuven.be"]
 
   spec.summary = "Smart Ontology Layer for Interoperable Systems"
-  spec.description = "Smart Ontology Layer for Interoperable Systems"
-  spec.homepage = "https://github.com/mehmetc/solis"
+  spec.description = "Accelerating API Development Using SHACL-Driven Smart Layers on Triple Stores"
+  spec.homepage = "https://github.com/libis/solis-core"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   #spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/mehmetc/solis"
-  spec.metadata["changelog_uri"] = "https://github.com/mehmetc/solis"
+  spec.metadata["source_code_uri"] = "https://github.com/libis/solis-core"
+  spec.metadata["changelog_uri"] = "https://github.com/libis/solis-core/blob/master/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -42,22 +42,19 @@ Gem::Specification.new do |spec|
   spec.add_dependency "graphiti", "~> 1.8"
   spec.add_dependency "graphiti_graphql", "~> 0.1"
   spec.add_dependency "data_collector", "~> 0.62"
-  spec.add_dependency "abbrev"
-  spec.add_dependency "csv"
-  spec.add_dependency "mutex_m"
-  spec.add_dependency "ostruct"
+  spec.add_dependency "abbrev", "~> 0.1"
+  spec.add_dependency "csv", "~> 3.3"
+  spec.add_dependency "mutex_m", "~> 0.3"
+  spec.add_dependency "ostruct", "~> 0.6"
   spec.add_dependency 'google_drive', '~> 3.0'
-  # these are part of linkeddata and do not have to imported separately
-  # spec.add_dependency 'json-ld', '~> 3.3.2'
-  # spec.add_dependency 'shacl', '~> 0.4.1'
   spec.add_dependency 'tsort', '~> 0.2.0'
   spec.add_dependency 'securerandom', '~> 0.4.1'
   spec.add_dependency 'iso8601', '~> 0.13.0'
   spec.add_dependency 'edtf', '~> 3.2.0'
-  spec.add_dependency 'sinatra'
-  spec.add_dependency 'http-accept'
-  spec.add_dependency 'rackup'
-  spec.add_dependency 'puma'
+  spec.add_dependency 'sinatra', '~> 4.1'
+  spec.add_dependency 'http-accept', '~> 2.2'
+  spec.add_dependency 'rackup', '~> 2.2'
+  spec.add_dependency 'puma', '~> 7.0'
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
