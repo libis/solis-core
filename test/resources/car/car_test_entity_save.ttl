@@ -1,6 +1,7 @@
 @prefix example: <https://example.com/> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix dash:   <http://datashapes.org/dash#> .
 
 example:CarShape
     a sh:NodeShape;
@@ -25,6 +26,10 @@ example:CarShape
                           sh:nodeKind    sh:IRI ;
                           sh:class       example:Person ;
                           sh:minCount    0 ; ];
+    sh:property     [ sh:path        example:comments;
+                          sh:name        "comments" ;
+                          sh:description "Comments on the car" ;
+                          sh:node        dash:ListShape; ];
 .
 
 example:PersonShape

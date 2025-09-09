@@ -24,7 +24,7 @@
         "http://purl.org/ontology/bibo/organizer"
       ],
       "name": "Event",
-      "prefix": "purl",
+      "prefix": "event",
       "description": null,
       "plural": "events",
       "snake_case_name": "event"

@@ -136,6 +136,7 @@ module Solis
         data['@type'] = type_root if data['@type'].nil?
         data.each do |name_attr, val_attr|
           next if RESERVED_FIELDS.include?(name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity_or_ref(e)
@@ -212,6 +213,7 @@ module Solis
         obj['@id'] = obj['@id'] || URI.join(namespace, SecureRandom.uuid).to_s
         obj.each do |name_attr, val_attr|
           next if RESERVED_FIELDS.include?(name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if e.is_a?(Hash) and !e.key?('@value')
@@ -226,6 +228,7 @@ module Solis
         obj[name_attr] = obj[name_attr] || val_def
         obj.each do |_name_attr, val_attr|
           next if RESERVED_FIELDS.include?(_name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity(e)
@@ -240,6 +243,7 @@ module Solis
         obj.delete(name_attr)
         obj.each do |_name_attr, val_attr|
           next if RESERVED_FIELDS.include?(_name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity(e)
@@ -253,6 +257,7 @@ module Solis
         obj[name_attr] = map[obj['@id']] if map.key?(obj['@id'])
         obj.each do |_name_attr, val_attr|
           next if RESERVED_FIELDS.include?(_name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity(e)
@@ -266,6 +271,7 @@ module Solis
         obj[name_attr] += 1 if obj.key?(name_attr)
         obj.each do |_name_attr, val_attr|
           next if RESERVED_FIELDS.include?(_name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity(e)
@@ -279,6 +285,7 @@ module Solis
         obj['@type'] = expand_term(obj['@type'], context) if obj.key?('@type')
         obj.each do |_name_attr, val_attr|
           next if RESERVED_FIELDS.include?(_name_attr)
+          val_attr = if_container_as_array(val_attr)
           val_attr = [val_attr] unless val_attr.is_a?(Array)
           val_attr.each do |e|
             if is_object_an_embedded_entity(e)
@@ -345,7 +352,13 @@ module Solis
           next if RESERVED_FIELDS.include?(name_attr)
           content_attr.each_with_index do |e, i|
             unless e.key?('@id')
-              obj2[name_attr][i] = f_conv.call(e['@value'], e['@type'])
+              if e.key?('@list')
+                e['@list'].each_with_index do |_e, _i|
+                  obj2[name_attr][i]['@list'][_i] = f_conv.call(_e['@value'], _e['@type'])
+                end
+              else
+                obj2[name_attr][i] = f_conv.call(e['@value'], e['@type'])
+              end
             end
           end
         end
@@ -392,6 +405,13 @@ module Solis
         obj2 = JSON::LD::API.expand(obj)[0]
         term_expanded = obj2.keys.first rescue nil
         term_expanded
+      end
+
+      def self.if_container_as_array(v)
+        return v unless v.is_a?(Hash)
+        return v['@list'] if v.key?('@list')
+        return v['@set'] if v.key?('@set')
+        v
       end
 
     end

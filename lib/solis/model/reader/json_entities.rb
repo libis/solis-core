@@ -25,10 +25,10 @@ module Solis
 
           metadata_node = RDF::URI(graph_namespace)
 
-          shacl_graph << [metadata_node, RDF::Vocab::DC.title, graph_title]
-          shacl_graph << [metadata_node, RDF::Vocab::OWL.versionInfo, graph_version]
-          shacl_graph << [metadata_node, RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION), graph_version_counter]
-          shacl_graph << [metadata_node, RDF::Vocab::DC.title, graph_description]
+          shacl_graph << [metadata_node, RDF::Vocab::DC.title, graph_title] if graph_title
+          shacl_graph << [metadata_node, RDF::Vocab::OWL.versionInfo, graph_version] if graph_version
+          shacl_graph << [metadata_node, RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION), graph_version_counter] if graph_version_counter
+          shacl_graph << [metadata_node, RDF::Vocab::DC.description, graph_description] if graph_description
 
           # Add entities
 

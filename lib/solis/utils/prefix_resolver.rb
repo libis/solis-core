@@ -9,7 +9,7 @@ module Solis
         return CACHE[namespace] if CACHE[namespace]
 
         # Try multiple sources in order of preference
-        prefix = try_rdf_vocab(namespace) || try_lov(namespace) || try_prefix_cc(namespace) ||
+        prefix = try_rdf_vocab(namespace) || try_common_vocab(namespace) || try_lov(namespace) || try_prefix_cc(namespace) ||
           generate_fallback_prefix(namespace)
 
         CACHE[namespace] = prefix
@@ -53,6 +53,15 @@ module Solis
           end
         end
         nil
+      end
+
+      def self.try_common_vocab(namespace)
+        vocab = {
+          'http://www.w3.org/1999/02/22-rdf-syntax-ns#' => 'rdf',
+          'http://xmlns.com/foaf/0.1/' => 'foaf',
+          'http://purl.org/NET/c4dm/event.owl#' => 'event'
+        }
+        vocab[namespace]
       end
 
       def self.generate_fallback_prefix(namespace)

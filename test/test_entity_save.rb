@@ -315,5 +315,55 @@ class TestEntitySave < Minitest::Test
 
   end
 
+  def test_entity_save_list
+
+    data = JSON.parse %(
+      {
+        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+        "color": ["green", "yellow"],
+        "comments": {
+          "_list": [
+            "nice in the beginning ...",
+            "... lesser nice to drive after all"
+          ]
+        }
+      }
+    )
+
+    repository = RDF::Repository.new
+    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+
+    car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+
+    puts car.to_pretty_pre_validate_jsonld
+    puts car.valid?
+
+    car.save
+
+    puts "\n\nREPO CONTENT:\n\n"
+    puts repository.dump(:ntriples)
+
+    # NOTE: uncomment following when list deletion in triple store works.
+
+    # car.attributes.comments = JSON.parse %(
+    #   {
+    #     "_list": [
+    #       "bla bla 1",
+    #       "bla bla 2",
+    #       "bla bla 3"
+    #     ]
+    #   }
+    # )
+    #
+    # puts car.to_pretty_pre_validate_jsonld
+    # puts car.valid?
+    #
+    # car.save
+    #
+    # puts "\n\nREPO CONTENT:\n\n"
+    # puts repository.dump(:ntriples)
+
+  end
+
 end
 

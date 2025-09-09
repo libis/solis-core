@@ -192,6 +192,44 @@ class TestEntityLoad < Minitest::Test
 
     person.load(deep = true)
 
+  end
+
+  def test_entity_load_list
+
+    data = JSON.parse %(
+      {
+        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+        "color": ["green", "yellow"],
+        "comments": {
+          "_list": [
+            "nice in the beginning ...",
+            "... lesser nice to drive after all"
+          ]
+        }
+      }
+    )
+
+    repository = RDF::Repository.new
+    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+
+    car = Solis::Model::Entity.new(data, @model, 'Car', store)
+
+    car.save
+
+    puts "\n\nREPO CONTENT:\n\n"
+    puts repository.dump(:ntriples)
+
+    data = JSON.parse %(
+      {
+        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be"
+      }
+    )
+
+    car_2 = Solis::Model::Entity.new(data, @model, 'Car', store)
+
+    car_2.load
+    
+    assert_equal(car_2.attributes.comments.key?('_list'), true)
 
   end
 
