@@ -595,6 +595,10 @@ module Solis
                   ids_op << @store.save_attribute_for_id(id, name_attr, content['@value'], content['@type'])
                 end
               end
+            elsif content.key?('@list')
+              # a list
+              content_list = content['@list'].collect { |e| [e['@value'], e['@type']] }
+              ids_op << @store.save_attribute_for_id(id, name_attr, content_list, 'list')
             elsif content.key?('@id')
               # a reference
               ids_op << @store.save_attribute_for_id(id, name_attr, content['@id'], 'URI')

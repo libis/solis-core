@@ -78,6 +78,10 @@ module Solis
           query.each_solution do |solution|
             @logger.debug([s, solution.p, solution.o])
             g << [s, solution.p, solution.o]
+            if solution.o.node?
+              list = get_list_object_for_subject_and_predicate(s, solution.p, o: solution.o)
+              g << list
+            end
             if deep
               # if solution.o.is_a?(RDF::URI) or solution.o.is_a?(RDF::Literal::AnyURI)
               if solution.o.is_a?(RDF::URI)
@@ -460,14 +464,17 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              insert['graph'] << st
+              # insert['graph'] << st
+              add_statement_to_graph(insert['graph'], st)
             else
               # pre-delete peer attributes, don't care about what exists;
               objects.each do |o|
-                delete['graph'] << [st[0], st[1], o]
+                # delete['graph'] << [st[0], st[1], o]
+                add_statement_to_graph(delete['graph'], [st[0], st[1], o])
               end
               # add new attribute values
-              insert['graph'] << st
+              # insert['graph'] << st
+              add_statement_to_graph(insert['graph'], st)
             end
 
           when Solis::Store::SaveMode::PRE_DELETE_PEERS_IF_DIFF_SET
@@ -475,17 +482,20 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              insert['graph'] << st
+              # insert['graph'] << st
+              add_statement_to_graph(insert['graph'], st)
             else
               key_sp = "#{st[0].to_s}_#{st[1].to_s}"
               if objects.sort != cache_ops[key_sp].sort
                 # attribute is present but with different values that the ones to write;
                 # stage those old ones for deletion
                 objects.each do |o|
-                  delete['graph'] << [st[0], st[1], o]
+                  # delete['graph'] << [st[0], st[1], o]
+                  add_statement_to_graph(delete['graph'], [st[0], st[1], o])
                 end
                 # add new attribute values
-                insert['graph'] << st
+                # insert['graph'] << st
+                add_statement_to_graph(insert['graph'], st)
               end
             end
 
@@ -494,16 +504,19 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              insert['graph'] << st
+              # insert['graph'] << st
+              add_statement_to_graph(insert['graph'], st)
             else
               unless objects.include?(st[2])
                 # peer attributes exist, but not with this value;
                 # stage those old ones for deletion
                 objects.each do |o|
-                  delete['graph'] << [st[0], st[1], o]
+                  # delete['graph'] << [st[0], st[1], o]
+                  add_statement_to_graph(delete['graph'], [st[0], st[1], o])
                 end
                 # add new attribute values
-                insert['graph'] << st
+                # insert['graph'] << st
+                add_statement_to_graph(insert['graph'], st)
               end
             end
 
@@ -512,7 +525,8 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             # delete peer attributes;
             objects.each do |o|
-              delete['graph'] << [st[0], st[1], o]
+              # delete['graph'] << [st[0], st[1], o]
+              add_statement_to_graph(delete['graph'], [st[0], st[1], o])
             end
 
           end
@@ -614,26 +628,66 @@ module Solis
         [s, p]
       end
 
-      def prepare_statement(id, name_attr, val_attr, type_attr)
-        s, p = prepare_subject_and_predicate(id, name_attr)
+      def prepare_object(val_attr, type_attr)
         if type_attr.eql?('URI')
           o = RDF::URI(val_attr)
+        elsif type_attr.eql?('list')
+          o = RDF::List.new
+          val_attr.each do |v|
+            o << prepare_object(v[0], v[1])
+          end
         else
           type_attr_known = RDF::Vocabulary.find_term(type_attr)
           type_attr = type_attr_known unless type_attr_known.nil?
           o = RDF::Literal.new(val_attr, datatype: type_attr)
         end
+        o
+      end
+
+      def prepare_statement(id, name_attr, val_attr, type_attr)
+        s, p = prepare_subject_and_predicate(id, name_attr)
+        o = prepare_object(val_attr, type_attr)
         [s, p, o]
+      end
+
+      def add_statement_to_graph(graph, st)
+        if st[2].is_a?(RDF::List)
+          graph << st[2]
+          graph << [st[0], st[1], st[2].subject]
+        else
+          graph << st
+        end
       end
 
       def get_objects_for_subject_and_predicate(s, p)
         objects = []
         result = @client_sparql.select.where([s, p, :o])
         result.each_solution do |solution|
-          objects << solution.o
+          if solution.o.nil?
+            # it is a blank node starting a list
+            objects << get_list_object_for_subject_and_predicate(s, p)
+          else
+            objects << solution.o
+          end
         end
         @logger.debug("GET_OBJECTS_FOR_SUBJECT_AND_PREDICATE: #{s}, #{p}:\n#{objects}")
         objects
+      end
+
+      def get_list_object_for_subject_and_predicate(s, p, o: nil)
+        result = @client_sparql.query("
+          SELECT ?item
+          WHERE {
+            <#{s.to_s}> <#{p.to_s}>/<#{RDF.rest}>*/<#{RDF.first}> ?item
+          }
+        ")
+        items = []
+        result.each_solution do |solution|
+          items << solution.item
+        end
+        # NOTE: "subject" is ignored in "values" is empty
+        list = RDF::List.new(subject: o, values: items)
+        list
       end
 
       def create_delete_insert_where_query(graph_delete, graph_insert, clause_where, name_graph=nil)
