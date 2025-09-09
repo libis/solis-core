@@ -1,10 +1,11 @@
 require_relative 'model/reader'
 require_relative 'model/writer'
-require_relative "validator/validatorV1"
-require_relative "validator/validatorV2"
+require_relative 'model/entity'
 require_relative "model/literals/edtf"
 require_relative "model/literals/iso8601"
 require_relative "model/parser/shacl"
+require_relative "validator/validatorV1"
+require_relative "validator/validatorV2"
 require_relative "utils/namespace"
 require_relative "utils/prefix_resolver"
 require_relative "utils/jsonld"
