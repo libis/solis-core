@@ -593,8 +593,8 @@ module Solis
                 @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
                 @logger.debug(query)
                 @logger.debug("\n\n")
-                response = client.response(query)
-                report = client.parse_report(response)
+                response = @client_sparql.response(query)
+                report = @client_sparql.parse_report(response)
                 if report[:count_update] == 0
                   success = false
                   message = message_dirty
@@ -685,7 +685,7 @@ module Solis
         result.each_solution do |solution|
           items << solution.item
         end
-        # NOTE: "subject" is ignored in "values" is empty
+        # NOTE: "subject" is ignored if "values" is empty
         list = RDF::List.new(subject: o, values: items)
         list
       end
