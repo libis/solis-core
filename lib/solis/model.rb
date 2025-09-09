@@ -152,6 +152,10 @@ module Solis
       _get_object_for_preficate(RDF::Vocab::OWL.versionInfo)# || ''
     end
 
+    def version=(version)
+      _set_object_for_preficate(RDF::Vocab::OWL.versionInfo, version)
+    end
+
     def version_counter
       s = _get_object_for_preficate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION))# || 0
       s&.to_i
