@@ -102,6 +102,14 @@ class TestWriter < Minitest::Test
     assert_equal(expect, open_api)
   end
 
+  def test_write_open_api_with_custom_options
+    expect=File.read('test/resources/car/car_openapi.json')
+    open_api = @solis.model.writer('application/openapi.json', mountpoint: '/_entities/')
+    JSON.load(open_api).tap do |o|
+      assert_equal('_entities', o['paths'].keys.first.split('/').reject(&:empty?).first)
+    end
+  end
+
   def test_write_shacl_for_sioc
     s = Solis.new({store: Solis::Store::Memory.new(),model: {
       prefix: 'sioc',

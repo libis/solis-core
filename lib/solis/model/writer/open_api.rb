@@ -7,6 +7,8 @@ class OpenApiWriter < Solis::Model::Writer::Generic
     return "No repository provided" if repository.nil?
     return "options[:shapes] missing" unless options.key?(:shapes)
 
+    mountpoint = (options[:mountpoint] || '/').chomp('/') + '/'
+
     shapes = adapt_parse_shapes_to_extract_shapes_format(options[:shapes])
 
     if shapes.empty?
@@ -39,8 +41,8 @@ class OpenApiWriter < Solis::Model::Writer::Generic
 
         # Create a basic path for this resource
         entity_plural_path = entity_plural.underscore
-        collection_path = "/#{entity_plural_path}"
-        individual_path = "/#{entity_plural_path}/{id}"
+        collection_path = "#{mountpoint}#{entity_plural_path}"
+        individual_path = "#{mountpoint}#{entity_plural_path}/{id}"
 
         openapi["paths"][collection_path] = generate_collection_operations(schema_name)
         openapi["paths"][individual_path] = generate_individual_operations(schema_name)
