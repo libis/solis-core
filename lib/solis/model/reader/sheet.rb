@@ -243,10 +243,10 @@ module Solis
             properties = {}
 
             entity_data.each do |p|
+              next if p['name'].nil? || p['name'].empty? || p['datatype'].nil? || p['datatype'].empty?
               property_name = I18n.transliterate(p['name'].strip)
               min_max = extract_min_max(p)
 
-              puts "#{entity_name}.#{property_name}"
               validate_property(p, entity_name, property_name)
               if properties.key?(property_name)
                 puts "Found #{entity_name}.#{property_name}"
@@ -307,7 +307,16 @@ module Solis
 
           def to_shacl(datas)
             shacl_prefix = determine_shacl_prefix(datas.first)
+            prefix = datas.first[:ontologies][:base][:prefix]
             output = header(datas.first)
+            output += "\n"
+            output +=  <<-METADATA
+#{prefix}: a owl:Ontology;        
+dc:title "#{datas.first[:metadata][:title] || 'No Title'}";
+dc:abstract "#{datas.first[:metadata][:description] || 'No description'}";
+dc:creator "#{datas.first[:metadata][:author] || ''}";
+owl:versionInfo #{datas.first[:metadata][:version] || '0.1'} .
+METADATA
 
             datas.each do |data|
               data[:entities].each do |entity_name, metadata|
