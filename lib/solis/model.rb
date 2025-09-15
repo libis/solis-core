@@ -134,44 +134,44 @@ module Solis
 
     #attr_accessor :title, :version, :description, :creator
     def title
-      _get_object_for_preficate(RDF::Vocab::DC.title)# || Solis::Utils::Namespace.detect_primary_namespace(@graph, @namespace)
+      _get_object_for_predicate(RDF::Vocab::DC.title)
     end
 
     def title=(title)
-      _set_object_for_preficate(RDF::Vocab::DC.title, title)
+      _set_object_for_predicate(RDF::Vocab::DC.title, title)
     end
 
     def description
-      _get_object_for_preficate(RDF::Vocab::DC.description)
+      _get_object_for_predicate(RDF::Vocab::DC.abstract)
     end
 
     def description=(description)
-      _set_object_for_preficate(RDF::Vocab::DC.description, description)
+      _set_object_for_predicate(RDF::Vocab::DC.description, description)
     end
 
     def version
-      _get_object_for_preficate(RDF::Vocab::OWL.versionInfo)# || ''
+      _get_object_for_predicate(RDF::Vocab::OWL.versionInfo)# || ''
     end
 
     def version=(version)
-      _set_object_for_preficate(RDF::Vocab::OWL.versionInfo, version)
+      _set_object_for_predicate(RDF::Vocab::OWL.versionInfo, version)
     end
 
     def version_counter
-      s = _get_object_for_preficate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION))# || 0
+      s = _get_object_for_predicate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION))# || 0
       s&.to_i
     end
 
     def version_counter=(version_counter)
-      _set_object_for_preficate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION), version_counter)
+      _set_object_for_predicate(RDF::URI(Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION), version_counter)
     end
 
     def creator
-      _get_object_for_preficate(RDF::Vocab::DC.creator, false)
+      _get_object_for_predicate(RDF::Vocab::DC.creator, false)
     end
 
     def creator=(creator)
-      _set_object_for_preficate(RDF::Vocab::DC.creator, creator)
+      _set_object_for_predicate(RDF::Vocab::DC.creator, creator)
     end
 
     def get_property_entity_for_entity(name_entity, name_attr)
@@ -258,7 +258,7 @@ module Solis
       @graph.query([nil, RDF.type, RDF::Vocab::OWL.Ontology])
     end
 
-    def _get_object_for_preficate(predicate, singleton = true)
+    def _get_object_for_predicate(predicate, singleton = true)
       statements = @graph.query([RDF::URI(@namespace), predicate, nil])
       return nil if statements.empty?
       if singleton
@@ -274,7 +274,7 @@ module Solis
       end
     end
 
-    def _set_object_for_preficate(predicate, object)
+    def _set_object_for_predicate(predicate, object)
       #TODO: set a default working language
       language = nil
       ontology_uri = RDF::URI(@namespace)

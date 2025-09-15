@@ -99,7 +99,7 @@ class TestReader < Minitest::Test
   def test_load_from_google_sheet
     Solis.config.name = 'google_config.yml'
 
-    config = Solis.config.to_h
+    config = Solis.config.keys.each_with_object({}){|k, h| h[k] = Solis.config[k]}
     config[:store] = Solis::Store::Memory.new()
 
     solis = Solis.new(config)
@@ -107,6 +107,14 @@ class TestReader < Minitest::Test
     assert_includes(all_entities, 'Tenant')
 
     puts JSON.pretty_generate(all_entities)
+
+    assert_equal('SOLIS frontend', solis.model.title)
+    assert_equal('Ontology used to store frontend data like tenant, project, ...', solis.model.description)
+    assert_equal('LIBIS', solis.model.creator.first)
+    assert_equal('0.1', solis.model.version)
+
+    puts solis.model.writer('text/turtle')
+
     # File.open('./test/resources/solis_shacl2.ttl', 'wb') do |f|
     #   f.puts solis.model.writer
     # end
