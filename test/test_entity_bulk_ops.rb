@@ -15,94 +15,107 @@ class TestEntityBulkOps < Minitest::Test
       tmp_dir: dir_tmp
     })
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+    # store_1.logger.level = Logger::DEBUG
+    # store_2.logger.level = Logger::DEBUG
 
   end
 
   def test_entity_bulk_ops
 
-    data_1 = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota"
-      }
-    )
+    @stores.each do |store|
 
-    data_2 = JSON.parse %(
-      {
-        "_id": "https://example.com/77f77a12-d05a-4872-b789-e25219302e8a",
-        "color": "pink",
-        "brand": "subaru"
-      }
-    )
+      puts store.run_operations(store.delete_all)
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      data_1 = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota"
+        }
+      )
 
-    car_1 = Solis::Model::Entity.new(data_1, @model, 'Car', store)
-    car_2 = Solis::Model::Entity.new(data_2, @model, 'Car', store)
+      data_2 = JSON.parse %(
+        {
+          "_id": "https://example.com/77f77a12-d05a-4872-b789-e25219302e8a",
+          "color": "pink",
+          "brand": "subaru"
+        }
+      )
 
-    car_1.save(delayed=true)
-    car_2.save(delayed=true)
+      car_1 = Solis::Model::Entity.new(data_1, @model, 'Car', store)
+      car_2 = Solis::Model::Entity.new(data_2, @model, 'Car', store)
 
-    str_ttl_truth = %(
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      car_1.save(delayed=true)
+      car_2.save(delayed=true)
 
-    graph_to_check = RDF::Graph.new(data: repository)
+      str_ttl_truth = %(
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    assert_equal(graph_truth == graph_to_check, true)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
 
-    store.run_operations
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    str_ttl_truth = %(
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/color> "pink" .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/brand> "subaru" .
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      store.run_operations
 
-    graph_to_check = RDF::Graph.new(data: repository)
-    delete_metadata_from_graph(graph_to_check)
+      str_ttl_truth = %(
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/color> "pink" .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/brand> "subaru" .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    assert_equal(graph_truth == graph_to_check, true)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
 
-    car_1.destroy(delayed=true)
-    car_2.destroy(delayed=true)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    str_ttl_truth = %(
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/color> "pink" .
-      <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/brand> "subaru" .
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      car_1.destroy(delayed=true)
+      car_2.destroy(delayed=true)
 
-    graph_to_check = RDF::Graph.new(data: repository)
-    delete_metadata_from_graph(graph_to_check)
+      str_ttl_truth = %(
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/color> "pink" .
+        <https://example.com/77f77a12-d05a-4872-b789-e25219302e8a> <https://example.com/brand> "subaru" .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    assert_equal(graph_truth == graph_to_check, true)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
 
-    store.run_operations
-    
-    str_ttl_truth = %(
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    graph_to_check = RDF::Graph.new(data: repository)
+      store.run_operations
 
-    assert_equal(graph_truth == graph_to_check, true)
+      str_ttl_truth = %(
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
+
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
+
+    end
 
   end
 

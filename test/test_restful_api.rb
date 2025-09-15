@@ -6,13 +6,13 @@ class TestRESTfulAPI < Minitest::Test
     @namespace = 'https://example.com/'
     @prefix = 'example'
 
-    @repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(@repository, @namespace)
+    repository = RDF::Repository.new
+    @store = Solis::Store::RDFProxy.new(repository, @namespace)
 
     dir_tmp = File.join(__dir__, './data')
 
     config = {
-      store: store,
+      store: @store,
       model: {
         prefix: @prefix,
         namespace: @namespace,
@@ -63,7 +63,7 @@ class TestRESTfulAPI < Minitest::Test
       block_until_alive(@api.url_ping)
       begin
 
-        @repository.clear!
+        @store.run_operations(@store.delete_all)
 
         data = JSON.parse %(
           {
@@ -107,7 +107,7 @@ class TestRESTfulAPI < Minitest::Test
       block_until_alive(@api.url_ping)
       begin
 
-        @repository.clear!
+        @store.run_operations(@store.delete_all)
 
         data = JSON.parse %(
           {
@@ -154,7 +154,7 @@ class TestRESTfulAPI < Minitest::Test
       block_until_alive(@api.url_ping)
       begin
 
-        @repository.clear!
+        @store.run_operations(@store.delete_all)
 
         data = JSON.parse %(
           {
@@ -211,7 +211,7 @@ def test_api_delete
     block_until_alive(@api.url_ping)
     begin
 
-      @repository.clear!
+      @store.run_operations(@store.delete_all)
 
       data = JSON.parse %(
           {

@@ -14,6 +14,15 @@ class TestEntityBasic < Minitest::Test
                                    tmp_dir: dir_tmp
                                  })
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+
   end
 
   def test_entity_creation
@@ -303,149 +312,155 @@ class TestEntityBasic < Minitest::Test
 
   def test_entity_patch_overwrite_refs_lists
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+    @stores.each do |store|
 
-    # prepare car along with an owner
+      puts store.run_operations(store.delete_all)
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/c4cba0e3-f7a0-43e3-bbde-134337f74323",
-            "name": "super mario",
-            "address": {
-              "_id": "https://example.com/e958232b-e35a-4658-bbd7-5f56d7b50da9",
-              "street": "fake street"
+      # prepare car along with an owner
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/c4cba0e3-f7a0-43e3-bbde-134337f74323",
+              "name": "super mario",
+              "address": {
+                "_id": "https://example.com/e958232b-e35a-4658-bbd7-5f56d7b50da9",
+                "street": "fake street"
+              }
             }
-          }
-        ]
-      }
-    )
-
-    car = Solis::Model::Entity.new(data, @model, 'Car', store)
-
-    car.save
-
-    # prepare one person and save
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {
-          "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-          "street": "fake street"
+          ]
         }
-      }
-    )
+      )
 
-    person_1 = Solis::Model::Entity.new(data, @model, 'Person', store)
+      car = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    person_1.save
+      car.save
 
-    # prepare another person and save
+      # prepare one person and save
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/caf57ff7-b568-43b3-81bb-f31b7371d8db",
-        "name": "mary jane",
-        "address": {
-          "_id": "https://example.com/15120d60-9272-4c8d-ba1b-b1ee040ad396",
-          "street": "fake street"
-        }
-      }
-    )
-
-    person_2 = Solis::Model::Entity.new(data, @model, 'Person', store)
-
-    person_2.save
-
-    # patch car by linking to existing persons
-
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "nissan",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
-          },
-          {
-            "_id": "https://example.com/caf57ff7-b568-43b3-81bb-f31b7371d8db"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {
+            "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+            "street": "fake street"
           }
-        ]
-      }
-    )
+        }
+      )
 
-    car.patch(obj_patch, opts={
-      overwrite_refs_lists: true,
-      add_missing_refs: true,
-      autoload_missing_refs: true
-    })
+      person_1 = Solis::Model::Entity.new(data, @model, 'Person', store)
 
-    assert_equal(car.valid?, true)
+      person_1.save
 
-    assert_equal(car.attributes.owners.size, 2)
+      # prepare another person and save
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/caf57ff7-b568-43b3-81bb-f31b7371d8db",
+          "name": "mary jane",
+          "address": {
+            "_id": "https://example.com/15120d60-9272-4c8d-ba1b-b1ee040ad396",
+            "street": "fake street"
+          }
+        }
+      )
+
+      person_2 = Solis::Model::Entity.new(data, @model, 'Person', store)
+
+      person_2.save
+
+      # patch car by linking to existing persons
+
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "nissan",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
+            },
+            {
+              "_id": "https://example.com/caf57ff7-b568-43b3-81bb-f31b7371d8db"
+            }
+          ]
+        }
+      )
+
+      car.patch(obj_patch, opts={
+        overwrite_refs_lists: true,
+        add_missing_refs: true,
+        autoload_missing_refs: true
+      })
+
+      assert_equal(car.valid?, true)
+
+      assert_equal(car.attributes.owners.size, 2)
+
+    end
 
   end
 
   def test_entity_patch_add_missing_refs_with_autoload_no_store
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+    @stores.each do |store|
 
-    # prepare car (without ref to any person)
+      puts store.run_operations(store.delete_all)
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": []
-      }
-    )
+      # prepare car (without ref to any person)
 
-    car = Solis::Model::Entity.new(data, @model, 'Car', nil)
-
-    # prepare person and save
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {
-          "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-          "street": "fake street"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": []
         }
-      }
-    )
+      )
 
-    person = Solis::Model::Entity.new(data, @model, 'Person', store)
+      car = Solis::Model::Entity.new(data, @model, 'Car', nil)
 
-    person.save
+      # prepare person and save
 
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "nissan",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "john smith"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {
+            "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+            "street": "fake street"
           }
-        ]
-      }
-    )
+        }
+      )
 
-    assert_raises(Solis::Model::Entity::MissingStoreError) do
-      car.patch(obj_patch, opts={
-        add_missing_refs: true,
-        autoload_missing_refs: true
-      })
+      person = Solis::Model::Entity.new(data, @model, 'Person', store)
+
+      person.save
+
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "nissan",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "john smith"
+            }
+          ]
+        }
+      )
+
+      assert_raises(Solis::Model::Entity::MissingStoreError) do
+        car.patch(obj_patch, opts={
+          add_missing_refs: true,
+          autoload_missing_refs: true
+        })
+      end
+
     end
 
   end
@@ -488,88 +503,91 @@ class TestEntityBasic < Minitest::Test
 
   def test_entity_patch_add_missing_refs_with_autoload
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+    @stores.each do |store|
 
-    # prepare car (without ref to any person) and save
+      puts store.run_operations(store.delete_all)
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": []
-      }
-    )
+      # prepare car (without ref to any person) and save
 
-    car = Solis::Model::Entity.new(data, @model, 'Car', store)
-
-    car.save
-
-    # prepare person and save
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {
-          "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-          "street": "fake street"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": []
         }
-      }
-    )
+      )
 
-    person = Solis::Model::Entity.new(data, @model, 'Person', store)
+      car = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    person.save
+      car.save
 
-    # wrongly patch car by linking to non-existing person
+      # prepare person and save
 
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "nissan",
-        "owners": [
-          {
-            "_id": "https://example.com/non-existing-id",
-            "name": "john smith"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {
+            "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+            "street": "fake street"
           }
-        ]
-      }
-    )
+        }
+      )
 
-    assert_raises(Solis::Model::Entity::LoadError) do
+      person = Solis::Model::Entity.new(data, @model, 'Person', store)
+
+      person.save
+
+      # wrongly patch car by linking to non-existing person
+
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "nissan",
+          "owners": [
+            {
+              "_id": "https://example.com/non-existing-id",
+              "name": "john smith"
+            }
+          ]
+        }
+      )
+
+      assert_raises(Solis::Model::Entity::LoadError) do
+        car.patch(obj_patch, opts={
+          add_missing_refs: true,
+          autoload_missing_refs: true
+        })
+      end
+
+      # correctly patch car by linking to existing person
+
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "nissan",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "john smith"
+            }
+          ]
+        }
+      )
+
       car.patch(obj_patch, opts={
         add_missing_refs: true,
         autoload_missing_refs: true
       })
+
+      assert_equal(car.valid?, true)
+
+      assert_equal(car.attributes.color, 'black')
+      assert_equal(car.attributes.brand, 'nissan')
+      assert_equal(car.attributes.owners[0]['name'], 'john smith')
+
     end
-
-    # correctly patch car by linking to existing person
-
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "nissan",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "john smith"
-          }
-        ]
-      }
-    )
-
-    car.patch(obj_patch, opts={
-      add_missing_refs: true,
-      autoload_missing_refs: true
-    })
-
-    assert_equal(car.valid?, true)
-
-    assert_equal(car.attributes.color, 'black')
-    assert_equal(car.attributes.brand, 'nissan')
-    assert_equal(car.attributes.owners[0]['name'], 'john smith')
 
   end
   def test_entity_patch_depth0_1

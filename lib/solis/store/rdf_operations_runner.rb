@@ -23,6 +23,7 @@ module Solis
         ops_write = []
         ops_any = []
         indexes = []
+        ids_op = [ids_op] if (ids_op.is_a?(String) && !ids_op.eql?('all'))
         @ops.each_with_index do |op, index|
           if ids_op.is_a?(Array)
             next unless ids_op.include?(op['id'])
@@ -50,6 +51,16 @@ module Solis
       end
 
       private
+
+      def init_db
+        @client_sparql.insert_data(RDF::Graph.new { |graph|
+          graph << [
+            RDF::URI('https://example.com/dummy_s'),
+            RDF::URI('https://example.com/dummy_p'),
+            RDF::URI('https://example.com/dummy_o')
+          ]
+        })
+      end
 
       def parse_json_value_from_datatype(str_value, datatype)
         case datatype
@@ -230,6 +241,8 @@ module Solis
         ops.each do |op|
           if op['name'].eql?('delete_attributes_for_id')
             ops_destroy << op
+          elsif op['name'].eql?('delete_all')
+            ops_destroy << op
           else
             ops_save << op
           end
@@ -240,15 +253,28 @@ module Solis
         res
       end
 
-      def run_destroy_operations(ops_generic)
-        ss = []
-        ops_generic.map do |op|
-          case op['name']
-          when 'delete_attributes_for_id'
-            id = op['content'][0]
-            s = RDF::URI(id)
-            ss << s
+      def run_destroy_operations(ops)
+        ops_destroy_for_id = []
+        ops_destroy_all = []
+        ops.each do |op|
+          if op['name'].eql?('delete_attributes_for_id')
+            ops_destroy_for_id << op
+          else
+            ops_destroy_all << op
           end
+        end
+        res = {}
+        res.merge!(run_destroy_for_id_operations(ops_destroy_for_id))
+        res.merge!(run_destroy_all_operations(ops_destroy_all))
+        res
+      end
+
+      def run_destroy_for_id_operations(ops_generic)
+        ss = []
+        ops_generic.each do |op|
+          id = op['content'][0]
+          s = RDF::URI(id)
+          ss << s
         end
         r = delete_attributes_for_subjects(ss)
         res = {}
@@ -258,90 +284,53 @@ module Solis
         res
       end
 
+      def run_destroy_all_operations(ops_generic)
+        res = {}
+        ops_generic.each do |op|
+          res[op['id']] = _delete_all
+        end
+        res
+      end
+
+      def _delete_all
+        report = {}
+        case @client_sparql.url
+        when RDF::Queryable
+          repository = @client_sparql.url
+          if @mutex_repository.nil?
+            # report[:count_delete] = repository.count
+            report[:count_update] = report[:count_delete]
+            repository.clear!
+          else
+            @mutex_repository.synchronize do
+              report[:count_delete] = repository.count
+              report[:count_update] = report[:count_delete]
+              repository.clear!
+            end
+          end
+        else
+          # NOTE: this better be a DELETE DATA.
+          # DELETE/WHERE needs a pattern match to delete all data.
+          # On Virtuoso, it fails when no triples exist.
+          query = "
+            WITH GRAPH <#{@name_graph}>
+            DELETE {
+                ?s ?p ?o .
+            } WHERE {
+                ?s ?p ?o .
+            }
+          "
+          response = @client_sparql.response(query)
+          report = @client_sparql.parse_report(response)
+        end
+        init_db
+        {
+          "success" => true,
+          "message" => report
+        }
+      end
+
       def delete_attributes_for_subjects(ss)
-#         unless ss.empty?
-#           str_ids = ss.map { |s| "<#{s.to_s}>" }.join(' ')
-#
-#           # Fixed single query: only delete if subjects are NOT referenced
-#           str_query = %(
-# WITH <#{@client_sparql.options[:graph]}>
-#   DELETE {
-#     ?s ?p ?o
-#   }
-#   WHERE {
-#     VALUES ?s { #{str_ids} }
-#     ?s ?p ?o .
-#     FILTER NOT EXISTS {
-#       ?other_entity ?any_property ?s
-#     }
-#   }
-#     )
-#
-#           @logger.debug("\n\nDELETE QUERY:\n\n")
-#           @logger.debug(str_query)
-#           @logger.debug("\n\n")
-#
-#           # Count subjects before deletion to check if any were actually deleted
-#           count_query = %(
-#       SELECT (COUNT(DISTINCT ?s) AS ?count) WHERE {
-#         VALUES ?s { #{str_ids} }
-#         ?s ?p ?o .
-#         FILTER NOT EXISTS {
-#           ?other_entity ?any_property ?s
-#         }
-#       }
-#     )
-#
-#           # Check how many subjects can be safely deleted
-#           count_result = @client_sparql.query(count_query)
-#           deletable_count = count_result.first[:count].to_i
-#
-#           if deletable_count == 0
-#             # Check if subjects exist but are referenced
-#             exist_query = %(
-#         ASK WHERE {
-#           VALUES ?s { #{str_ids} }
-#           ?s ?p ?o
-#         }
-#       )
-#
-#             subjects_exist = @client_sparql.ask(exist_query)
-#
-#             if subjects_exist
-#               return {
-#                 "success" => false,
-#                 "message" => "Cannot delete: subjects are referenced by other entities"
-#               }
-#             else
-#               return {
-#                 "success" => true,
-#                 "message" => "No subjects found to delete"
-#               }
-#             end
-#           end
-#
-#           # Execute the deletion
-#           begin
-#             repository = @client_sparql.query(str_query, update: true)
-#
-#             if deletable_count < ss.length
-#               return {
-#                 "success" => false,
-#                 "message" => "Only #{deletable_count} of #{ss.length} subjects could be deleted (others are referenced)"
-#               }
-#             else
-#               return {
-#                 "success" => true,
-#                 "message" => "Successfully deleted #{deletable_count} subject(s)"
-#               }
-#             end
-#           rescue => e
-#             return {
-#               "success" => false,
-#               "message" => "Delete failed: #{e.message}"
-#             }
-#           end
-#         end
         unless ss.empty?
           str_ids = ss.map { |s| "<#{s.to_s}>" } .join(' ')
           # This query string takes care of:
@@ -362,28 +351,61 @@ module Solis
           @logger.debug("\n\nDELETE QUERY:\n\n")
           @logger.debug(str_query)
           @logger.debug("\n\n")
-          # run query
-          # TODO: repository seems a snapshot of the triple store
-          # after the query.
-          # This seems inefficient, especially if the store contains
-          # a lot of triple. To check better ...
-          repository = @client_sparql.query(str_query, update: true)
-          # check if delete failed because subjects were referenced
-          client_sparql = SPARQL::Client.new(repository)
-          subjects_were_referenced = client_sparql.ask
-                                                  .where([:s_ref, :p_ref, :s])
-                                                  .values(:s, *ss)
-                                                  .true?
-          # if subjects_were_referenced
-          #   raise StandardError, "any of these '#{str_ids}' was referenced"
-          # end
-          success = !subjects_were_referenced
-          message = ''
-          if subjects_were_referenced
-            message = "any of these '#{str_ids}' was referenced"
+
+          success = true
+          err_code = 0
+          message = ""
+          message_save_counters_not_available = "save counters not available (Virtuoso-only supported)"
+          message_subjects_were_referenced = "any of these '#{str_ids}' was referenced"
+          message_subjects_were_referenced_or_not_existing = "any of these '#{str_ids}' was referenced or not existing"
+
+          case @client_sparql.url
+          when RDF::Queryable
+
+            perform_delete_report_atomic = lambda do
+              @client_sparql.query(str_query, update: true)
+              subjects_were_referenced = @client_sparql.ask
+                                                       .where([:s_ref, :p_ref, :s])
+                                                       .values(:s, *ss)
+                                                       .true?
+              report = { subjects_were_referenced: subjects_were_referenced }
+              report
+            end
+            report = nil
+            if @mutex_repository.nil?
+              report = perform_delete_report_atomic.call
+            else
+              @mutex_repository.synchronize do
+                report = perform_delete_report_atomic.call
+              end
+            end
+
+            if report[:subjects_were_referenced]
+              success = false
+              err_code = 2
+              message = message_subjects_were_referenced
+            end
+
+          else
+
+            response = @client_sparql.response(str_query)
+            report = @client_sparql.parse_report(response)
+            if report[:count_update].nil?
+              success = false
+              err_code = 1
+              message = message_save_counters_not_available
+            end
+            if report[:count_update] == 0
+              success = false
+              err_code = 2
+              message = message_subjects_were_referenced_or_not_existing
+            end
+
           end
+
           {
             "success" => success,
+            "err_code" => err_code,
             "message" => message
           }
         end
@@ -424,14 +446,39 @@ module Solis
             op_rdf['row_where'] = RDF::Statement(s, p, o).to_s
           when 'set_not_existing_id_condition_for_saves'
             id = op_rdf['content'][0]
-            op_rdf['row_where'] = "FILTER NOT EXISTS { <#{id}> ?p ?o }"
+            op_rdf['row_where'] = "FILTER NOT EXISTS { <#{id}> ?b ?c }"
           else
             op_rdf = nil
           end
           op_rdf
         end.compact
 
-        clause_where = ops_filters.map { |op| op['row_where'] } .join(' ')
+        clause_where = ops_filters.map { |op| op['row_where'] } .join("\n")
+        clause_where = "?s ?p ?o .\n#{clause_where}"
+        # clause_where = "OPTIONAL { ?s ?p ?o } \n#{clause_where}"
+
+        # NOTE:
+        # For 'set_not_existing_id_condition_for_saves', for RDF::Repository,
+        # the following slightly simplified where clause also works:
+        #
+        #   FILTER NOT EXISTS { <uri-1> ?p ?o }
+        #   FILTER NOT EXISTS { <uri-2> ?p ?o }
+        #   ...
+        #   FILTER NOT EXISTS { <uri-N> ?p ?o }
+        #
+        # For Virtuoso, or perhaps all other triple stores (?), this does not work.
+        # The working query is:
+        #
+        #   ?s ?p ?p .
+        #   FILTER NOT EXISTS { <uri-1> ?b ?c }
+        #   FILTER NOT EXISTS { <uri-2> ?b ?c }
+        #   ...
+        #   FILTER NOT EXISTS { <uri-N> ?b ?c }
+        #
+        # This is important to read: https://stackoverflow.com/questions/63664058/the-mechanism-of-filter-not-exists-in-sparql
+        # To work properly in Virtuoso, there seems to be th need of having "?s ?p ?p ." where clause.
+        # This add the extra needs to always have at least one triple in the graph, for the above to work correctly.
+        # Other SHACL playground, like https://atomgraph.github.io/SPARQL-Playground/, seems to work correctly.
 
         # create empty delete graph
         insert = {
@@ -536,8 +583,10 @@ module Solis
         nothing_to_save = false
 
         success = true
+        err_code = 0
         message = ""
         message_dirty = "data is dirty"
+        message_save_counters_not_available = "save counters not available (Virtuoso-only supported)"
 
         unless nothing_to_save
 
@@ -558,11 +607,12 @@ module Solis
               when RDF::Queryable
 
                 perform_delete_insert_where_with_report_atomic = lambda do
-                  str_query_ask = "ASK WHERE { #{clause_where} }"
+                  str_query_ask = "ASK WHERE {\n#{clause_where} }"
                   @logger.debug("\n\nASK QUERY:\n\n")
                   @logger.debug(str_query_ask)
                   @logger.debug("\n\n")
                   has_pattern = @client_sparql.query(str_query_ask).true?
+                  @logger.debug("has_pattern: #{has_pattern}")
                   if has_pattern
                     str_query = create_delete_insert_where_query(delete['graph'], insert['graph'], clause_where)
                     @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
@@ -583,11 +633,21 @@ module Solis
                 end
                 unless report[:can_update]
                   success = false
+                  err_code = 1
                   message = message_dirty
                 end
 
 
               else
+
+                str_query_ask = "ASK WHERE { GRAPH <#{@name_graph}> {\n#{clause_where}} }"
+
+                # "has_pattern" not used, just to check pattern match in single-thread debugging
+                @logger.debug("\n\nASK QUERY:\n\n")
+                @logger.debug(str_query_ask)
+                @logger.debug("\n\n")
+                has_pattern = @client_sparql.query(str_query_ask)
+                @logger.debug("has_pattern: #{has_pattern}")
 
                 query = create_delete_insert_where_query(delete['graph'], insert['graph'], clause_where, name_graph=@name_graph)
                 @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
@@ -595,8 +655,14 @@ module Solis
                 @logger.debug("\n\n")
                 response = @client_sparql.response(query)
                 report = @client_sparql.parse_report(response)
+                if report[:count_update].nil?
+                  success = false
+                  err_code = 1
+                  message = message_save_counters_not_available
+                end
                 if report[:count_update] == 0
                   success = false
+                  err_code = 2
                   message = message_dirty
                 end
 
@@ -611,7 +677,8 @@ module Solis
         res = ops_generic.map do |op|
           [op['id'], {
             "success" => success,
-            "message" => message
+            "message" => message,
+            "err_code" => err_code
           }]
         end.to_h
         res
@@ -663,6 +730,7 @@ module Solis
         objects = []
         result = @client_sparql.select.where([s, p, :o])
         result.each_solution do |solution|
+          # next unless solution.method_defined?(:o)
           if solution.o.nil?
             # it is a blank node starting a list
             objects << get_list_object_for_subject_and_predicate(s, p)
@@ -693,9 +761,11 @@ module Solis
       def create_delete_insert_where_query(graph_delete, graph_insert, clause_where, name_graph=nil)
         str_query = ""
         unless name_graph.nil?
-          str_query += "WITH GRAPH <#{name_graph}>"
+          str_query += "\nWITH <#{name_graph}>"
         end
-        str_query += "DELETE { #{graph_delete.dump(:ntriples)} } INSERT { #{graph_insert.dump(:ntriples)} } WHERE { #{clause_where} }"
+        str_query += "\nDELETE { \n#{graph_delete.dump(:ntriples)} } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
+        # str_query += "\nDELETE { GRAPH <#{name_graph}> { \n#{graph_delete.dump(:ntriples)} } } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
+        # str_query += "\nDELETE { \n#{graph_delete.dump(:ntriples)} } INSERT { \n#{graph_insert.dump(:ntriples)} } USING <#{name_graph}> WHERE { \n#{clause_where} \n}"
         str_query
       end
 

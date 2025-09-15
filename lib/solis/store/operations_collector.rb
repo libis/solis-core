@@ -176,6 +176,24 @@ module Solis
 
       end
 
+      def delete_all
+
+        op = {
+          "id" => SecureRandom.uuid,
+          "name" => "delete_all",
+          "type" => "write",
+          "opts" => nil,
+          "content" => nil
+        }
+
+        @logger.debug(op)
+
+        @ops << op
+
+        op['id']
+
+      end
+
       def run_raw_query(query, type_query)
 
         op = {
