@@ -14,84 +14,98 @@ class TestEntityCircularDeps < Minitest::Test
                                    tmp_dir: dir_tmp
                                  })
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+    # store_1.logger.level = Logger::DEBUG
+    # store_2.logger.level = Logger::DEBUG
+
   end
 
 
   def test_entity_load_with_circular_deps
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+    @stores.each do |store|
 
-    # add 1st car
+      puts store.run_operations(store.delete_all)
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota"
-      }
-    )
+      # add 1st car
 
-    car_1 = Solis::Model::Entity.new(data, @model, 'Car', store)
-
-    car_1.save
-
-    # add 2nd car
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34",
-        "color": "blue",
-        "brand": "toyota"
-      }
-    )
-
-    car_2 = Solis::Model::Entity.new(data, @model, 'Car', store)
-
-    car_2.save
-
-    # create circular dependency
-
-    obj_patch = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "replacement": {
-          "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota"
         }
-      }
-    )
+      )
 
-    car_1.patch(obj_patch, opts={
-      autoload_missing_refs: true
-    })
+      car_1 = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    car_1.save
+      car_1.save
 
-    obj_patch = JSON.parse %(
-      {
-        "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34",
-        "replacement": {
-          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be"
+      # add 2nd car
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34",
+          "color": "blue",
+          "brand": "toyota"
         }
-      }
-    )
+      )
 
-    car_2.load(deep = true) # necessary because the previous car_1.save also saved (hence made dirty) car_2 alongside
+      car_2 = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    car_2.patch(obj_patch, opts={
-      autoload_missing_refs: true
-    })
+      car_2.save
 
-    car_2.save
+      # create circular dependency
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      obj_patch = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "replacement": {
+            "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34"
+          }
+        }
+      )
 
-    # load data with circular dependencies
+      car_1.patch(obj_patch, opts={
+        autoload_missing_refs: true
+      })
 
-    car_1.load(deep = true)
+      car_1.save
 
-    assert_equal(car_1.valid?, true)
+      obj_patch = JSON.parse %(
+        {
+          "_id": "https://example.com/12b03797-c6d0-4fe5-a25d-da92d716bd34",
+          "replacement": {
+            "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be"
+          }
+        }
+      )
+
+      car_2.load(deep = true) # necessary because the previous car_1.save also saved (hence made dirty) car_2 alongside
+
+      car_2.patch(obj_patch, opts={
+        autoload_missing_refs: true
+      })
+
+      car_2.save
+
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
+
+      # load data with circular dependencies
+
+      car_1.load(deep = true)
+
+      assert_equal(car_1.valid?, true)
+
+    end
 
   end
 

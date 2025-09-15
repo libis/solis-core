@@ -1,18 +1,11 @@
-require_relative 'rdf_operations_runner'
-require_relative 'operations_collector'
+require_relative 'rdf_proxy'
 
 module Solis
   class Store
-    class Memory
-      include Solis::Store::OperationsCollector
-      include Solis::Store::RDFOperationsRunner
-      def initialize(graph = "http://example.com/")
-        @graph = graph
-        @store = RDF::Repository.new(graph: @graph)
-
-        @client_sparql = SPARQL::Client.new(@store, graph: @graph)
-        @logger = Solis.logger
-        @ops = []
+    class Memory < RDFProxy
+      def initialize(name_graph="http://example.com/", params = {})
+        repository = RDF::Repository.new
+        super(repository, name_graph, params)
       end
     end
   end

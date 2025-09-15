@@ -26,342 +26,385 @@ class TestEntitySave < Minitest::Test
                                   hierarchy: hierarchy
                                 })
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+    # store_2.logger.level = Logger::DEBUG
+
   end
 
   def test_entity_save_from_model_1
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "address": {
-              "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-              "street": "fake street"
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "address": {
+                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                "street": "fake street"
+              }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
 
-    car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "@unset",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "john smith"
+            }
+          ]
+        }
+      )
 
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "@unset",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "john smith"
-          }
-        ]
-      }
-    )
+      car.patch(obj_patch)
 
-    car.patch(obj_patch)
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      str_ttl_truth = %(
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "john smith" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "black" .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    str_ttl_truth = %(
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "john smith" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "black" .
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
 
-    graph_to_check = RDF::Graph.new(data: repository)
-    delete_metadata_from_graph(graph_to_check)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    assert_equal(graph_truth == graph_to_check, true)
+    end
 
   end
 
   def test_entity_save_from_model_2
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "address": {
-              "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-              "street": "fake street"
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "address": {
+                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                "street": "fake street"
+              }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model_2, 'ElectricCar', store)
 
-    car = Solis::Model::Entity.new(data, @model_2, 'ElectricCar', store)
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      obj_patch = JSON.parse %(
+        {
+          "color": "black",
+          "brand": "@unset",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "john smith"
+            }
+          ]
+        }
+      )
 
-    obj_patch = JSON.parse %(
-      {
-        "color": "black",
-        "brand": "@unset",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "john smith"
-          }
-        ]
-      }
-    )
+      car.patch(obj_patch)
 
-    car.patch(obj_patch)
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      str_ttl_truth = %(
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "john smith" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/ElectricCar> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "black" .
+      )
 
-    str_ttl_truth = %(
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "john smith" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/ElectricCar> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "black" .
-    )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
 
-    graph_to_check = RDF::Graph.new(data: repository)
-    delete_metadata_from_graph(graph_to_check)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    assert_equal(graph_truth == graph_to_check, true)
+    end
 
   end
 
   def test_entity_loads_refs_while_validate_or_save
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+    @stores.each do |store|
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {
-          "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-          "street": "fake street"
-        }
-      }
-    )
+      puts store.run_operations(store.delete_all)
 
-    person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
-
-    person.save
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {
+            "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+            "street": "fake street"
           }
-        ]
-      }
-    )
+        }
+      )
 
-    car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+      person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
 
-    assert_equal(car.valid?, true)
+      person.save
 
-    car.save
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
+            }
+          ]
+        }
+      )
+
+      car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+
+      assert_equal(car.valid?, true)
+
+      car.save
+
+    end
 
   end
 
   def test_entity_reset_array_and_resave
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "address": {
-              "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-              "street": "fake street"
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "address": {
+                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                "street": "fake street"
+              }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
 
-    car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      car.attributes.owners = []
 
-    car.attributes.owners = []
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      puts car.to_pretty_json
 
-    puts car.to_pretty_json
+    end
 
   end
 
   def test_entity_create_with_empty_object
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {}
-      }
-    )
+    @stores.each do |store|
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      puts store.run_operations(store.delete_all)
 
-    @model_1.logger.level = Logger::DEBUG
-    store.logger.level = Logger::DEBUG
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {}
+        }
+      )
 
-    person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
+      person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
 
-    person.save
+      person.save
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts person.to_pretty_json
+      puts person.to_pretty_json
+
+    end
 
   end
 
   def test_entity_reset_object_and_resave
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-        "name": "jon doe",
-        "address": {
-          "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-          "street": "fake street"
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+          "name": "jon doe",
+          "address": {
+            "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+            "street": "fake street"
+          }
         }
-      }
-    )
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
 
-    person = Solis::Model::Entity.new(data, @model_1, 'Person', store)
+      person.save
 
-    person.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      person.attributes.address = {}
 
-    person.attributes.address = {}
+      person.save
 
-    @model_1.logger.level = Logger::DEBUG
-    store.logger.level = Logger::DEBUG
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    person.save
+      puts person.to_pretty_json
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
-
-    puts person.to_pretty_json
+    end
 
   end
 
   def test_entity_save_list
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "comments": {
-          "_list": [
-            "nice in the beginning ...",
-            "... lesser nice to drive after all"
-          ]
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "comments": {
+            "_list": [
+              "nice in the beginning ...",
+              "... lesser nice to drive after all"
+            ]
+          }
         }
-      }
-    )
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
 
-    car = Solis::Model::Entity.new(data, @model_1, 'Car', store)
+      puts car.to_pretty_pre_validate_jsonld
+      puts car.valid?
 
-    puts car.to_pretty_pre_validate_jsonld
-    puts car.valid?
+      car.save
 
-    car.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      str_ttl_truth = %(
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/comments> _:g185920 .
+        _:g185920 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "nice in the beginning ..." .
+        _:g185920 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:g185928 .
+        _:g185928 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "... lesser nice to drive after all" .
+        _:g185928 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    # NOTE: uncomment following when list deletion in triple store works.
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
+      
+      assert_equal(graph_truth.isomorphic_with?(graph_to_check), true)
 
-    # car.attributes.comments = JSON.parse %(
-    #   {
-    #     "_list": [
-    #       "bla bla 1",
-    #       "bla bla 2",
-    #       "bla bla 3"
-    #     ]
-    #   }
-    # )
-    #
-    # puts car.to_pretty_pre_validate_jsonld
-    # puts car.valid?
-    #
-    # car.save
-    #
-    # puts "\n\nREPO CONTENT:\n\n"
-    # puts repository.dump(:ntriples)
+      # NOTE: uncomment following when list deletion in triple store works.
+
+      # car.attributes.comments = JSON.parse %(
+      #   {
+      #     "_list": [
+      #       "bla bla 1",
+      #       "bla bla 2",
+      #       "bla bla 3"
+      #     ]
+      #   }
+      # )
+      #
+      # puts car.to_pretty_pre_validate_jsonld
+      # puts car.valid?
+      #
+      # car.save
+      #
+      # puts "\n\nREPO CONTENT:\n\n"
+      # puts store.as_repository.dump(:ntriples)
+
+    end
 
   end
 

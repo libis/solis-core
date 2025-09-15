@@ -13,65 +13,79 @@ class TestEntityQuery < Minitest::Test
       tmp_dir: dir_tmp
     })
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+    # store_1.logger.level = Logger::DEBUG
+    # store_2.logger.level = Logger::DEBUG
+
   end
 
   def test_entity_query
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "driving_license": {
-              "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
-              "address": {
-                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-                "street": "fake street",
-                "number": [1, 15]
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "driving_license": {
+                "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
+                "address": {
+                  "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                  "street": "fake street",
+                  "number": [1, 15]
+                }
               }
             }
-          }
-        ]
+          ]
+        }
+      )
+
+      car = Solis::Model::Entity.new(data, @model, 'Car', store)
+
+      car.save
+
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
+
+      query_runner = Solis::Query::QueryRunner.new(@model, store)
+
+      attributes = {
+        "brand" => "toyota"
       }
-    )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      query_builder_car = Solis::Query::QueryBuilder.new(@model.namespace, 'Car', query_runner)
+      entity = query_builder_car.find_by(attributes)
+      assert_equal(entity.class, Solis::Model::Entity)
 
-    car = Solis::Model::Entity.new(data, @model, 'Car', store)
+      cont = query_builder_car.where(attributes).count
+      assert_equal(cont, 1)
 
-    car.save
+      attributes = {
+        "https://example.com/brand" => "toyota"
+      }
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      query_builder_car = Solis::Query::QueryBuilder.new(@model.namespace, 'https://example.com/Car', query_runner)
+      entity = query_builder_car.find_by(attributes)
+      assert_equal(entity.class, Solis::Model::Entity)
 
-    query_runner = Solis::Query::QueryRunner.new(@model, store)
+      cont = query_builder_car.where(attributes).count
+      assert_equal(cont, 1)
 
-    attributes = {
-      "brand" => "toyota"
-    }
-
-    query_builder_car = Solis::Query::QueryBuilder.new(@model.namespace, 'Car', query_runner)
-    entity = query_builder_car.find_by(attributes)
-    assert_equal(entity.class, Solis::Model::Entity)
-
-    cont = query_builder_car.where(attributes).count
-    assert_equal(cont, 1)
-
-    attributes = {
-      "https://example.com/brand" => "toyota"
-    }
-
-    query_builder_car = Solis::Query::QueryBuilder.new(@model.namespace, 'https://example.com/Car', query_runner)
-    entity = query_builder_car.find_by(attributes)
-    assert_equal(entity.class, Solis::Model::Entity)
-
-    cont = query_builder_car.where(attributes).count
-    assert_equal(cont, 1)
+    end
 
   end
 

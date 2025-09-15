@@ -86,15 +86,15 @@ module Solis
       end
 
       class DestroyError < StandardError
-        def initialize(msg)
-          msg = "#{msg}"
+        def initialize(code, msg)
+          msg = "code #{code}: #{msg}"
           super(msg)
         end
       end
 
       class SaveError < StandardError
-        def initialize(msg)
-          msg = "#{msg}"
+        def initialize(code, msg)
+          msg = "code #{code}: #{msg}"
           super(msg)
         end
       end
@@ -248,6 +248,8 @@ module Solis
           success = res.values.collect { |e| e['success'] }.all?
           messages = res.values.collect { |e| e['message'] }
           message = messages[0]
+          err_codes = res.values.collect { |e| e['err_code'] }
+          err_code = err_codes[0]
           if @persisted
             @hooks[:after_update]&.call(obj_internal, success)
           else
@@ -255,7 +257,7 @@ module Solis
           end
           @hooks[:after_save]&.call(obj_internal, success)
           unless success
-            raise SaveError.new(message)
+            raise SaveError.new(err_code, message)
           end
           increment_versions!
           @persisted = true
@@ -351,10 +353,11 @@ module Solis
         unless delayed
           res = @store.run_operations([id_op])[id_op]
           success = res['success']
+          err_code = res['err_code']
           message = res['message']
           @hooks[:after_destroy]&.call(obj_internal, success)
           unless success
-            raise DestroyError.new(message)
+            raise DestroyError.new(err_code, message)
           end
         end
         @persisted = false
@@ -590,7 +593,7 @@ module Solis
                 ids_op << @store.delete_attribute_for_id(id, name_attr)
               else
                 if name_attr.eql?(URI_DB_OPTIMISTIC_LOCK_VERSION)
-                  ids_op << @store.save_attribute_for_id(id, name_attr, content['@value'] + 1, content['@type'])
+                  ids_op << @store.save_attribute_for_id(id, name_attr, content['@value'] + 1, content['@type'], mode=Solis::Store::SaveMode::PRE_DELETE_PEERS)
                 else
                   ids_op << @store.save_attribute_for_id(id, name_attr, content['@value'], content['@type'])
                 end

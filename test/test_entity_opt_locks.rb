@@ -15,201 +15,224 @@ class TestEntityOptLocks < Minitest::Test
 
     @uri_version = Solis::Model::Entity::URI_DB_OPTIMISTIC_LOCK_VERSION
 
+    repository = RDF::Repository.new
+    store_1 = Solis::Store::RDFProxy.new(repository, @name_graph)
+    store_2 = Solis::Store::RDFProxy.new('http://localhost:8890/sparql', @name_graph)
+
+    @stores = [
+      store_1,
+      store_2
+    ]
+    # store_1.logger.level = Logger::DEBUG
+    # store_2.logger.level = Logger::DEBUG
+
   end
 
   def test_correct_increment_version
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "driving_license": {
-              "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
-              "address": {
-                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-                "street": "fake street",
-                "number": [1, 15]
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "driving_license": {
+                "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
+                "address": {
+                  "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                  "street": "fake street",
+                  "number": [1, 15]
+                }
               }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    car = Solis::Model::Entity.new(data, @model, 'Car', store)
+      assert_equal(car.version, 0)
 
-    assert_equal(car.version, 0)
+      car.save
 
-    car.save
+      assert_equal(car.version, 1)
 
-    assert_equal(car.version, 1)
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      str_ttl_truth = %(
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/DrivingLicense> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/driving_license> <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    str_ttl_truth = %(
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/DrivingLicense> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/driving_license> <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <#{@uri_version}> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
 
-    graph_to_check = RDF::Graph.new(data: repository)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    assert_equal(graph_truth == graph_to_check, true)
+      car.save
 
-    car.save
+      assert_equal(car.version, 2)
 
-    assert_equal(car.version, 2)
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      str_ttl_truth = %(
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/DrivingLicense> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
+        <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/driving_license> <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
 
-    puts "\n\nREPO CONTENT:\n\n"
-    puts repository.dump(:ntriples)
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
 
-    str_ttl_truth = %(
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Address> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/street> "fake street" .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <https://example.com/number> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/DrivingLicense> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <https://example.com/address> <https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea> .
-      <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/driving_license> <https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a> .
-      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/brand> "toyota" .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
-      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <#{@uri_version}> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
-    )
-    graph_truth = RDF::Graph.new
-    graph_truth.from_ttl(str_ttl_truth)
+      assert_equal(graph_truth.to_set == graph_to_check.to_set, true)
 
-    graph_to_check = RDF::Graph.new(data: repository)
-
-    assert_equal(graph_truth == graph_to_check, true)
+    end
 
   end
 
   def test_first_saved_wins
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "driving_license": {
-              "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
-              "address": {
-                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-                "street": "fake street",
-                "number": [1, 15]
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "driving_license": {
+                "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
+                "address": {
+                  "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                  "street": "fake street",
+                  "number": [1, 15]
+                }
               }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car_1 = Solis::Model::Entity.new(data, @model, 'Car', store)
+      car_2 = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    car_1 = Solis::Model::Entity.new(data, @model, 'Car', store)
-    car_2 = Solis::Model::Entity.new(data, @model, 'Car', store)
+      car_1.save
 
-    car_1.save
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
 
-    assert_raises(Solis::Model::Entity::SaveError) do
+      assert_raises(Solis::Model::Entity::SaveError) do
+        car_2.save
+      end
+
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
+
+      car_2.load(deep = true)
       car_2.save
-    end
 
-    car_2.load(deep = true)
-    car_2.save
+    end
 
   end
 
   def test_first_saved_wins_2
 
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
-        "color": ["green", "yellow"],
-        "brand": "toyota",
-        "owners": [
-          {
-            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
-            "name": "jon doe",
-            "driving_license": {
-              "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
-              "address": {
-                "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
-                "street": "fake street",
-                "number": [1, 15]
+    @stores.each do |store|
+
+      puts store.run_operations(store.delete_all)
+
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+          "color": ["green", "yellow"],
+          "brand": "toyota",
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe",
+              "driving_license": {
+                "_id": "https://example.com/f23dd664-adf0-4b86-a309-bd5e9e18ed5a",
+                "address": {
+                  "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+                  "street": "fake street",
+                  "number": [1, 15]
+                }
               }
             }
-          }
-        ]
-      }
-    )
+          ]
+        }
+      )
 
-    repository = RDF::Repository.new
-    store = Solis::Store::RDFProxy.new(repository, @name_graph)
+      car = Solis::Model::Entity.new(data, @model, 'Car', store)
 
-    car = Solis::Model::Entity.new(data, @model, 'Car', store)
-
-    car.save
-
-    data = JSON.parse %(
-      {
-        "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
-      }
-    )
-
-    person = Solis::Model::Entity.new(data, @model, 'Person', store)
-
-    person.load(deep = true)
-    person.save
-
-    assert_raises(Solis::Model::Entity::SaveError) do
       car.save
-    end
 
-    car.load(deep = true)
-    car.save
+      data = JSON.parse %(
+        {
+          "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9"
+        }
+      )
+
+      person = Solis::Model::Entity.new(data, @model, 'Person', store)
+
+      person.load(deep = true)
+      person.save
+
+      assert_raises(Solis::Model::Entity::SaveError) do
+        car.save
+      end
+
+      car.load(deep = true)
+      car.save
+
+    end
 
   end
 
