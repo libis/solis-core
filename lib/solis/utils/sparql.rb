@@ -29,11 +29,7 @@ module SPARQL
       # NOTE: all below tested on Virtuoso open-source only
       # following fixes a response content bug
       response.body.gsub!('rdf:type', '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>')
-      # puts "response.body:"
-      # pp response.body
       parsed = parse_response(response)
-      # puts "parsed:"
-      # pp parsed
       report = {}
       if parsed.is_a?(RDF::NTriples::Reader)
         graph = RDF::Graph.new
@@ -50,16 +46,22 @@ module SPARQL
     private
 
     def parse_str_report(str_report)
-      report = {}
-      if str_report.start_with?('Delete')
-        report[:count_delete] = str_report.scan(/[0-9]+/)[0].to_i
-        report[:count_update] = report[:count_delete]
-      elsif str_report.start_with?('Insert')
-        report[:count_insert] = str_report.scan(/[0-9]+/)[0].to_i
-        report[:count_update] = report[:count_insert]
-      elsif str_report.start_with?('Modify')
-        report[:count_delete], report[:count_insert] = str_report.scan(/[0-9]+/).collect { |v| v.to_i }
-        report[:count_update] = report[:count_delete] + report[:count_insert]
+      report = []
+      str_ops = str_report.split("\n")
+      str_ops.each do |str_op|
+        next if str_op.include?('Commit')
+        op = {}
+        if str_op.start_with?('Delete')
+          op[:count_delete] = str_op.scan(/[0-9]+/)[0].to_i
+          op[:count_update] = op[:count_delete]
+        elsif str_op.start_with?('Insert')
+          op[:count_insert] = str_op.scan(/[0-9]+/)[0].to_i
+          op[:count_update] = op[:count_insert]
+        elsif str_op.start_with?('Modify')
+          op[:count_delete], op[:count_insert] = str_op.scan(/[0-9]+/).collect { |v| v.to_i }
+          op[:count_update] = op[:count_delete] + op[:count_insert]
+        end
+        report << op
       end
       report
     end

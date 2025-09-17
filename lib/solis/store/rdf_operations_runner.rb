@@ -1,5 +1,47 @@
 
+# NOTE on SPARQL Update (https://www.w3.org/TR/sparql11-update/)
+#
+# Important parts:
+#
+# 2.2 SPARQL 1.1 Update Services
+# SPARQL 1.1 Update requests are sequences of operations.
+#
+# Each request SHOULD be treated atomically by a SPARQL 1.1 Update service.
+# The term 'atomically' means that a single request will result in either
+# no effect or a complete effect, # regardless of the number of operations
+# that may be present in the request.
+# Any resulting concurrency issues will be a matter for each implementation
+# to consider according to its own architecture. # In particular, using the
+# SERVICE keyword in the WHERE clause of operations in an Update request will
+# usually result in a loss of atomicity.
+
+# 3 SPARQL 1.1 Update Language
+# SPARQL 1.1 Update supports two categories of update operations on a Graph Store:
+#
+# A request is a sequence of operations and is terminated by EOF (End of File).
+# Multiple operations are separated by a ';' (semicolon) character. A semicolon
+# after the last operation in a request is optional. Implementations MUST ensure
+# that the operations of a single request are executed in a fashion that guarantees
+# the same effects as executing them sequentially in the order they appear in the request.
+#
+# Operations all result either in success or failure. A failure result MAY be accompanied
+# by extra information, indicating that some portion of the operations in the request were
+# successful. This document does not stipulate the exact form of the result, as that will
+# be dependent on the interface being used, for instance the SPARQL 1.1 protocol via HTTP
+# or a programmatic API. If multiple operations are present in a single request, then a
+# result of failure from any operation MUST abort the sequence of operations, causing the
+# subsequent operations to be ignored.
+#
+# ====================================================================================
+#
+# There seems to be no certainty on atomicity of either requests or operations.
+# Hence, it is better to squash updates in fewer queries as possible, to mitigate
+# possible non-atomicity. This is the approach that will be followed.
+# If the triple store query planner is not smart enough, this also can have benefits
+# on performance.
+
 require 'sparql'
+require 'securerandom'
 
 require_relative 'common'
 
@@ -298,7 +340,7 @@ module Solis
         when RDF::Queryable
           repository = @client_sparql.url
           if @mutex_repository.nil?
-            # report[:count_delete] = repository.count
+            report[:count_delete] = repository.count
             report[:count_update] = report[:count_delete]
             repository.clear!
           else
@@ -390,12 +432,12 @@ module Solis
 
             response = @client_sparql.response(str_query)
             report = @client_sparql.parse_report(response)
-            if report[:count_update].nil?
+            if report.collect {|e| e[:count_update]} .include?(nil)
               success = false
               err_code = 1
               message = message_save_counters_not_available
             end
-            if report[:count_update] == 0
+            if report.collect {|e| e[:count_update]} .include?(0)
               success = false
               err_code = 2
               message = message_subjects_were_referenced_or_not_existing
@@ -455,7 +497,6 @@ module Solis
 
         clause_where = ops_filters.map { |op| op['row_where'] } .join("\n")
         clause_where = "?s ?p ?o .\n#{clause_where}"
-        # clause_where = "OPTIONAL { ?s ?p ?o } \n#{clause_where}"
 
         # NOTE:
         # For 'set_not_existing_id_condition_for_saves', for RDF::Repository,
@@ -485,10 +526,7 @@ module Solis
           'graph' => RDF::Graph.new
         }
 
-        # create empty insert graph
-        delete = {
-          'graph' => RDF::Graph.new
-        }
+        clause_delete = ""
 
         # create an operations cache:
         # group operations by subject and predicate.
@@ -511,16 +549,15 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              # insert['graph'] << st
               add_statement_to_graph(insert['graph'], st)
             else
               # pre-delete peer attributes, don't care about what exists;
               objects.each do |o|
-                # delete['graph'] << [st[0], st[1], o]
-                add_statement_to_graph(delete['graph'], [st[0], st[1], o])
+                tmp = make_delete_where_query_parts_from_statement([st[0], st[1], o])
+                clause_delete += tmp[0]
+                clause_where += tmp[1]
               end
               # add new attribute values
-              # insert['graph'] << st
               add_statement_to_graph(insert['graph'], st)
             end
 
@@ -529,7 +566,6 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              # insert['graph'] << st
               add_statement_to_graph(insert['graph'], st)
             else
               key_sp = "#{st[0].to_s}_#{st[1].to_s}"
@@ -537,11 +573,11 @@ module Solis
                 # attribute is present but with different values that the ones to write;
                 # stage those old ones for deletion
                 objects.each do |o|
-                  # delete['graph'] << [st[0], st[1], o]
-                  add_statement_to_graph(delete['graph'], [st[0], st[1], o])
+                  tmp = make_delete_where_query_parts_from_statement([st[0], st[1], o])
+                  clause_delete += tmp[0]
+                  clause_where += tmp[1]
                 end
                 # add new attribute values
-                # insert['graph'] << st
                 add_statement_to_graph(insert['graph'], st)
               end
             end
@@ -551,18 +587,17 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             if objects.empty?
               # attribute is not present; add it
-              # insert['graph'] << st
               add_statement_to_graph(insert['graph'], st)
             else
               unless objects.include?(st[2])
                 # peer attributes exist, but not with this value;
                 # stage those old ones for deletion
                 objects.each do |o|
-                  # delete['graph'] << [st[0], st[1], o]
-                  add_statement_to_graph(delete['graph'], [st[0], st[1], o])
+                  tmp = make_delete_where_query_parts_from_statement([st[0], st[1], o])
+                  clause_delete += tmp[0]
+                  clause_where += tmp[1]
                 end
                 # add new attribute values
-                # insert['graph'] << st
                 add_statement_to_graph(insert['graph'], st)
               end
             end
@@ -572,8 +607,9 @@ module Solis
             objects = get_objects_for_subject_and_predicate(st[0], st[1])
             # delete peer attributes;
             objects.each do |o|
-              # delete['graph'] << [st[0], st[1], o]
-              add_statement_to_graph(delete['graph'], [st[0], st[1], o])
+              tmp = make_delete_where_query_parts_from_statement([st[0], st[1], o])
+              clause_delete += tmp[0]
+              clause_where += tmp[1]
             end
 
           end
@@ -614,7 +650,7 @@ module Solis
                   has_pattern = @client_sparql.query(str_query_ask).true?
                   @logger.debug("has_pattern: #{has_pattern}")
                   if has_pattern
-                    str_query = create_delete_insert_where_query(delete['graph'], insert['graph'], clause_where)
+                    str_query = create_delete_insert_where_query(clause_delete, insert['graph'], clause_where)
                     @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
                     @logger.debug(str_query)
                     @logger.debug("\n\n")
@@ -649,18 +685,18 @@ module Solis
                 has_pattern = @client_sparql.query(str_query_ask)
                 @logger.debug("has_pattern: #{has_pattern}")
 
-                query = create_delete_insert_where_query(delete['graph'], insert['graph'], clause_where, name_graph=@name_graph)
+                query = create_delete_insert_where_query(clause_delete, insert['graph'], clause_where, name_graph=@name_graph)
                 @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
                 @logger.debug(query)
                 @logger.debug("\n\n")
                 response = @client_sparql.response(query)
                 report = @client_sparql.parse_report(response)
-                if report[:count_update].nil?
+                if report.collect {|e| e[:count_update]} .include?(nil)
                   success = false
                   err_code = 1
                   message = message_save_counters_not_available
                 end
-                if report[:count_update] == 0
+                if report.collect {|e| e[:count_update]} .include?(0)
                   success = false
                   err_code = 2
                   message = message_dirty
@@ -726,12 +762,40 @@ module Solis
         end
       end
 
+      def make_delete_where_query_parts_from_statement(st)
+        # see: https://seaborne.blogspot.com/2011/03/updating-rdf-lists-with-sparql.html
+        delete_clause = ""
+        where_clause = ""
+        if st[2].is_a?(RDF::List)
+          id_var = SecureRandom.hex
+          list = "list_#{id_var}"
+          z = "z_#{id_var}"
+          head = "head_#{id_var}"
+          tail = "tail_#{id_var}"
+          delete_clause += "
+            ?#{z} <#{RDF::RDFV.first}> ?#{head} .
+            ?#{z} <#{RDF::RDFV.rest}> ?#{tail} .
+            #{st[0].to_nquads} #{st[1].to_nquads} ?#{z} .
+          "
+          where_clause += "
+            #{st[0].to_nquads} #{st[1].to_nquads} ?#{list} .
+            ?#{list} <#{RDF::RDFV.rest}>* ?#{z} .
+            ?#{z} <#{RDF::RDFV.first}> ?#{head} .
+            ?#{z} <#{RDF::RDFV.rest}> ?#{tail} .
+          "
+        else
+          delete_clause += "
+            #{st[0].to_nquads} #{st[1].to_nquads} #{st[2].to_nquads} .
+          "
+        end
+        [delete_clause, where_clause]
+      end
+
       def get_objects_for_subject_and_predicate(s, p)
         objects = []
         result = @client_sparql.select.where([s, p, :o])
         result.each_solution do |solution|
-          # next unless solution.method_defined?(:o)
-          if solution.o.nil?
+          if solution.o.nil? || solution.o.node?
             # it is a blank node starting a list
             objects << get_list_object_for_subject_and_predicate(s, p)
           else
@@ -758,14 +822,52 @@ module Solis
         list
       end
 
-      def create_delete_insert_where_query(graph_delete, graph_insert, clause_where, name_graph=nil)
+      def create_delete_insert_where_query(clause_delete, graph_insert, clause_where, name_graph=nil)
+        # rdf:List present some challenges in a DELETE/INSERT/WHERE query: it has blank nodes.
+        # For the INSERT part, this hqs drawbacks, see here (from https://www.w3.org/TR/sparql11-update/):
+        #
+        # "Blank nodes that appear in an INSERT clause operate similarly to blank nodes in the template
+        # of a CONSTRUCT query, i.e., they are re-instantiated for any solution of the WHERE clause;"
+        #
+        # This fact has been proven experimentally on Virtuoso.
+        # Other SPARQL engines deviate from SPARQL standard (e.g. https://gnome.pages.gitlab.gnome.org/tinysparql/tutorial.html#blank-nodes),
+        # but Virtuoso does not.
+        # Hence, a way to insert the list content only *once*.
+        # The following idea is applied:
+        # split the insert data content in 2 DELETE/INSERT/WHERE queries:
+        # 1) The first one takes case of handling all triples without blank nodes, as usual.
+        # If triples with blank nodes exist, it will also add a *single* fictitious extra triple.
+        # This will be used in the next query.
+        # 2) The second query handles only triples with blank nodes (e.g. rdf:List);
+        # in its WHERE and DELETE clauses, only the single fictitious triple is used, while in the INSERT clause
+        # the triples with blank nodes are included.
+        # The 2 queries are nox locked:
+        # When first query will insert, then the second query can insert (this time only once) as well.
+        # When first query will not insert, then the second query cannot insert as well.
+        graph_insert_std = RDF::Graph.new
+        graph_insert_bnodes = RDF::Graph.new
+        graph_where_bnodes = RDF::Graph.new
+        graph_insert.each do |statement|
+          if statement.subject.node? || statement.object.node?
+            graph_insert_bnodes << statement
+          else
+            graph_insert_std << statement
+          end
+        end
         str_query = ""
         unless name_graph.nil?
           str_query += "\nWITH <#{name_graph}>"
         end
-        str_query += "\nDELETE { \n#{graph_delete.dump(:ntriples)} } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
-        # str_query += "\nDELETE { GRAPH <#{name_graph}> { \n#{graph_delete.dump(:ntriples)} } } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
-        # str_query += "\nDELETE { \n#{graph_delete.dump(:ntriples)} } INSERT { \n#{graph_insert.dump(:ntriples)} } USING <#{name_graph}> WHERE { \n#{clause_where} \n}"
+        if graph_insert_bnodes.empty?
+          str_query += "\nDELETE { \n#{clause_delete} } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
+        else
+          id_lock = "lock_#{SecureRandom.hex}"
+          statement_lock = [RDF::URI("#{name_graph}#{id_lock}"), RDF::URI("#{name_graph}locked"), true]
+          graph_where_bnodes << statement_lock
+          graph_insert_std << statement_lock
+          str_query += "\nDELETE { \n#{clause_delete} } INSERT { \n#{graph_insert_std.dump(:ntriples)} } WHERE { \n#{clause_where} \n};"
+          str_query += "\nDELETE { \n#{graph_where_bnodes.dump(:ntriples)} } INSERT { \n#{graph_insert_bnodes.dump(:ntriples)} } WHERE { \n#{graph_where_bnodes.dump(:ntriples)} \n}"
+        end
         str_query
       end
 
