@@ -164,4 +164,12 @@ class TestReader < Minitest::Test
     pp solis.model.description
   end
 
+  def test_convert_car_json_entities_to_shacl
+    graph = Solis::Model::Reader.from_uri({
+                                            uri: 'file://test/resources/car_entities.json',
+                                            content_type: 'application/json'
+                                          })
+    puts graph.dump(:ttl, prefixes: graph.extract_prefixes)
+  end
+
 end

@@ -1,0 +1,43 @@
+{
+  "namespace": "http://example.org/",
+  "title": "Vehicles modelling",
+  "version": "http://example.org/1.0/",
+  "version_counter": 0,
+  "description": "Models of vehicles",
+  "entities": {
+    "http://example.org/Car": {
+      "direct_parents": [],
+      "all_parents": [],
+      "properties": {
+        "http://example.org/brand": {
+          "constraints": [
+            {
+              "description": "Car brand",
+              "data": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://example.org/checks": {
+          "constraints": [
+            {
+              "description": "Car checks",
+              "data": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "sorted": true
+              }
+            }
+          ]
+        }
+      },
+      "own_properties": [
+        "http://example.org/brand",
+        "http://example.org/checks"
+      ],
+      "name": "Car",
+      "description": "Car model",
+      "plural": "cars"
+    }
+  }
+}
