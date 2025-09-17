@@ -115,9 +115,6 @@ class TestModel < Minitest::Test
       r = model.get_property_datatype_for_entity('https://example.com/ElectricCar', 'https://example.com/color')
       assert_equal(r == 'http://www.w3.org/2001/XMLSchema#string', true)
 
-      r = model.get_properties_info_for_entity('https://example.com/ElectricCar')
-      assert_equal(r.key?('https://example.com/color'), true)
-
       r = model.writer('application/entities+json', raw: true)[:entities]
       assert_equal(r.key?('https://example.com/ElectricCar'), true)
       assert_equal(r['https://example.com/ElectricCar'][:properties].key?('https://example.com/color'), true)

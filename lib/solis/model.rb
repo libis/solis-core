@@ -94,9 +94,12 @@ module Solis
       options[:model] = self
       options[:namespace] ||= @namespace
       options[:prefix] ||= @prefix
+      options[:context] ||= @context
+      options[:context_inv] ||= @context_inv
       options[:graph] ||= @graph
       options[:title] ||= title
       options[:version] ||= version
+      options[:version_counter] ||= version_counter
       options[:description] ||= description
       options[:shapes] ||= @shapes
       options[:dependencies] ||= @dependencies
@@ -187,50 +190,12 @@ module Solis
     end
 
     def get_all_parent_entities_for_entity(name_entity)
-      list = [name_entity]
-      idx = 0
-      while true
-        if idx >= list.length
-          break
-        end
-        list += _get_parent_entities_for_entity(list[idx])
-        idx += 1
-      end
-      list[1..].uniq
+      Shapes.get_all_parent_classes_for_class(@shapes, name_entity)
     end
 
     def get_shape_for_entity(name_entity)
       name_shape = Shapes.get_shape_for_class(@shapes, name_entity)
       deep_copy(@shapes[name_shape])
-    end
-
-    def get_properties_info_for_entity(name_entity)
-      properties = {}
-      names_shapes = Shapes.get_shapes_for_class(@shapes, name_entity)
-      names_shapes.each do |name_shape|
-        property_shapes = deep_copy(@shapes[name_shape][:properties])
-        merge_info_entity_properties!(properties, property_shapes_as_entity_properties(property_shapes))
-      end
-      names_entities_parents = get_all_parent_entities_for_entity(name_entity)
-      names_entities_parents.each do |name_entity_parent|
-        names_shapes_parent = Shapes.get_shapes_for_class(@shapes, name_entity_parent)
-        names_shapes_parent.each do |name_shape_parent|
-          property_shapes_parent = deep_copy(@shapes[name_shape_parent][:properties])
-          properties_parent = property_shapes_as_entity_properties(property_shapes_parent)
-          merge_info_entity_properties!(properties, properties_parent)
-        end
-      end
-      properties
-    end
-
-    def get_own_properties_list_for_entity(name_entity)
-      list_properties = []
-      names_shapes = Shapes.get_shapes_for_class(@shapes, name_entity)
-      names_shapes.each do |name_shape|
-        property_shapes = deep_copy(@shapes[name_shape][:properties])
-        list_properties.concat(property_shapes.values.map { |v| v[:path] })
-      end
-      list_properties
     end
 
     def find_entity_by_plural(plural)
@@ -329,16 +294,7 @@ module Solis
     end
 
     def _get_parent_entities_for_entity(name_entity)
-      names_entities_parents = []
-      names_shapes = Shapes.get_shapes_for_class(@shapes, name_entity)
-      names_shapes.each do |name_shape|
-        names_nodes_parents = Shapes.get_parent_shapes_for_shape(@shapes, name_shape)
-        names_entities_parents += names_nodes_parents.map do |uri|
-          res = @shapes.select { |k,v| v[:uri] == uri }
-          res[uri][:target_class] rescue nil
-        end.compact.uniq
-      end
-      names_entities_parents
+      Shapes.get_parent_classes_for_class(@shapes, name_entity)
     end
 
     def add_plurals_to_shapes
@@ -374,39 +330,6 @@ module Solis
               @shapes[name_shape][:nodes] << @shapes[name_shape_parent][:uri]
             end
           end
-        end
-      end
-    end
-
-    def property_shapes_as_entity_properties(property_shapes)
-      properties = {}
-      property_shapes.each_value do |shape|
-        unless properties.key?(shape[:path])
-          properties[shape[:path]] = { constraints: [] }
-        end
-        constraints = deep_copy(shape[:constraints])
-        if constraints.key?(:or)
-          constraints[:or].map! do |o|
-            h = {
-              o[:path] => o
-            }
-            property_shapes_as_entity_properties(h).values[0]
-          end
-        end
-        properties[shape[:path]][:constraints] << {
-          description: shape[:description],
-          data: constraints
-        }
-      end
-      properties
-    end
-
-    def merge_info_entity_properties!(properties_1, properties_2)
-      properties_2.each do |k, v|
-        if properties_1.key?(k)
-          properties_1[k][:constraints].concat(v[:constraints])
-        else
-          properties_1[k] = v
         end
       end
     end

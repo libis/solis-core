@@ -4,31 +4,19 @@ require_relative "../parser/shacl"
 class JSONEntitiesWriter < Solis::Model::Writer::Generic
   def self.write(repository, options = {})
 
-    # NOTE:
-    # ideally, options[:model] should not be here, but only:
-    # - shapes
-    # - context
-    # - context_inv
-    # - ...
-    # But also don't want to remove those methods from model and put them here,
-    # because they can be useful for model instance too.
-    # Solution: in Model, make public class methods, e.g. get_parent_entities_for_entity(name_entity, shapes)
-    # Then you can use this both in model instance, than here.
-
     return "No repository provided" if repository.nil?
-    return "options[:model] missing" unless options.key?(:model)
+    return "options[:shapes] missing" unless options.key?(:shapes)
 
     raw = options[:raw] || false
 
-    model = options[:model]
-    shapes = model.shapes
-    context_inv = model.context_inv
+    shapes = options[:shapes]
+    context_inv = options[:context_inv]
 
-    graph_namespace = model.namespace
-    graph_title = model.title
-    graph_version = model.version
-    graph_version_counter = model.version_counter
-    graph_description = model.description
+    graph_namespace = options[:namespace]
+    graph_title = options[:title]
+    graph_version = options[:version]
+    graph_version_counter = options[:version_counter]
+    graph_description = options[:description]
 
     entities = {}
 
@@ -47,10 +35,10 @@ class JSONEntitiesWriter < Solis::Model::Writer::Generic
       namespace_entity = Solis::Utils::String.extract_namespace_from_uri(name_entity)
       prefix_entity = context_inv[namespace_entity]
       entities[name_entity] = {
-        direct_parents: model.get_parent_entities_for_entity(name_entity),
-        all_parents: model.get_all_parent_entities_for_entity(name_entity),
-        properties: model.get_properties_info_for_entity(name_entity),
-        own_properties: model.get_own_properties_list_for_entity(name_entity),
+        direct_parents: Shapes.get_parent_classes_for_class(shapes, name_entity),
+        all_parents: Shapes.get_all_parent_classes_for_class(shapes, name_entity),
+        properties: get_properties_info_for_entity(shapes, name_entity),
+        own_properties: get_own_properties_list_for_entity(shapes, name_entity),
         name: name,
         prefix: prefix_entity,
         description: description,
@@ -73,5 +61,71 @@ class JSONEntitiesWriter < Solis::Model::Writer::Generic
   end
 
   private
+
+  def self.deep_copy(obj)
+    Marshal.load(Marshal.dump(obj))
+  end
+
+  def self.get_properties_info_for_entity(shapes, name_entity)
+    properties = {}
+    names_shapes = Shapes.get_shapes_for_class(shapes, name_entity)
+    names_shapes.each do |name_shape|
+      property_shapes = deep_copy(shapes[name_shape][:properties])
+      merge_info_entity_properties!(properties, property_shapes_as_entity_properties(property_shapes))
+    end
+    names_entities_parents = Shapes.get_all_parent_classes_for_class(shapes, name_entity)
+    names_entities_parents.each do |name_entity_parent|
+      names_shapes_parent = Shapes.get_shapes_for_class(shapes, name_entity_parent)
+      names_shapes_parent.each do |name_shape_parent|
+        property_shapes_parent = deep_copy(shapes[name_shape_parent][:properties])
+        properties_parent = property_shapes_as_entity_properties(property_shapes_parent)
+        merge_info_entity_properties!(properties, properties_parent)
+      end
+    end
+    properties
+  end
+
+  def self.property_shapes_as_entity_properties(property_shapes)
+    properties = {}
+    property_shapes.each_value do |shape|
+      unless properties.key?(shape[:path])
+        properties[shape[:path]] = { constraints: [] }
+      end
+      constraints = deep_copy(shape[:constraints])
+      if constraints.key?(:or)
+        constraints[:or].map! do |o|
+          h = {
+            o[:path] => o
+          }
+          property_shapes_as_entity_properties(h).values[0]
+        end
+      end
+      properties[shape[:path]][:constraints] << {
+        description: shape[:description],
+        data: constraints
+      }
+    end
+    properties
+  end
+
+  def self.get_own_properties_list_for_entity(shapes, name_entity)
+    list_properties = []
+    names_shapes = Shapes.get_shapes_for_class(shapes, name_entity)
+    names_shapes.each do |name_shape|
+      property_shapes = deep_copy(shapes[name_shape][:properties])
+      list_properties.concat(property_shapes.values.map { |v| v[:path] })
+    end
+    list_properties
+  end
+
+  def self.merge_info_entity_properties!(properties_1, properties_2)
+    properties_2.each do |k, v|
+      if properties_1.key?(k)
+        properties_1[k][:constraints].concat(v[:constraints])
+      else
+        properties_1[k] = v
+      end
+    end
+  end
 
 end

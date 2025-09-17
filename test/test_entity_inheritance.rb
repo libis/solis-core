@@ -47,22 +47,4 @@ class TestEntityInheritance < Minitest::Test
 
   end
 
-  def test_entity_get_properties_info
-
-    data = JSON.parse %(
-      {
-        "color": "green",
-        "n_batteries": 1
-      }
-    )
-
-    car = Solis::Model::Entity.new(data, @model_1, 'ElectricCar', nil)
-
-    info = car.get_properties_info
-
-    assert_equal(info['https://example.com/color'].nil?, false)
-    assert_equal(info['https://example.com/color'][:constraints][0][:description], 'Color of the car')
-
-  end
-
 end

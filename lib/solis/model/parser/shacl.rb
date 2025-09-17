@@ -180,6 +180,32 @@ module Shapes
     classes
   end
 
+  def self.get_parent_classes_for_class(shapes, name_class)
+    names_classes_parents = []
+    names_shapes = get_shapes_for_class(shapes, name_class)
+    names_shapes.each do |name_shape|
+      names_nodes_parents = get_parent_shapes_for_shape(shapes, name_shape)
+      names_classes_parents += names_nodes_parents.map do |uri|
+        res = shapes.select { |k,v| v[:uri] == uri }
+        res[uri][:target_class] rescue nil
+      end.compact.uniq
+    end
+    names_classes_parents
+  end
+
+  def self.get_all_parent_classes_for_class(shapes, name_class)
+    list = [name_class]
+    idx = 0
+    while true
+      if idx >= list.length
+        break
+      end
+      list += get_parent_classes_for_class(shapes, list[idx])
+      idx += 1
+    end
+    list[1..].uniq
+  end
+
   private_class_method def self.get_property_shape_for_path(shapes, name_shape, path)
     shapes.dig(name_shape, :properties)&.select { |k, v| v[:path] == path }&.keys&.first
   end
