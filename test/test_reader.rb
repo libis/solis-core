@@ -5,7 +5,11 @@ class TestReader < Minitest::Test
     super
     Solis.config.path = 'test/resources/config'
 
-    @shacl = File.read('test/resources/car/car_shacl.ttl')
+  end
+
+  def test_read_from_stringio
+
+    shacl = File.read('test/resources/car/car_shacl.ttl')
 
     config = {
       cache_dir: '/tmp/cache',
@@ -13,16 +17,13 @@ class TestReader < Minitest::Test
       model: {
         prefix: 'e',
         namespace: 'https://example.com/',
-        uri: StringIO.new(@shacl),
+        uri: StringIO.new(shacl),
         content_type: 'text/turtle'
       }
     }
-    @solis = Solis.new(config)
+    solis = Solis.new(config)
 
-  end
-
-  def test_read_from_stringio
-    assert_includes(@solis.model.entity.all, 'Car')
+    assert_includes(solis.model.entity.all, 'Car')
   end
 
   def test_read_from_uri
