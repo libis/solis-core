@@ -77,8 +77,18 @@ module Solis
       end
       messages = []
       compacted['@graph'].each do |o|
+        next unless o['@type']
         next if o['@type'].eql?('sh:ValidationReport')
-        message = "#{o['sh:focusNode']['@id']}, #{o.dig('sh:resultPath', '@id')}, #{o['sh:resultMessage']}"
+        resNode = o['sh:focusNode']['@id']
+        resPath = o.dig('sh:resultPath', '@id')
+        if resPath.nil?
+          if o['sh:resultPath'] && o['sh:resultPath'].is_a?(Hash) && o['sh:resultPath'].key?('@list')
+            l = o['sh:resultPath']['@list']
+            resPath = "#{l[0]['@id']}[<list item>]"
+          end
+        end
+        resMessage = o['sh:resultMessage']
+        message = "#{resNode}, #{resPath}, #{resMessage}"
         messages << message
       end unless compacted['@graph'].nil?
       # NOTE: if shape file is badly formed, the following can happen:
