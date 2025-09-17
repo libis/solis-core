@@ -3,7 +3,7 @@
   "title": "The Bibliographic Ontology",
   "version": "http://purl.org/ontology/bibo/1.3/",
   "version_counter": 0,
-  "description": "The Bibliographic Ontology describes\nbibliographic things on the semantic Web in RDF.  This ontology can be\nused as a citation ontology, as a document classification ontology, or\nsimply as a way to describe any kind of document in RDF. It has been\ninspired by many existing document description metadata formats, and\ncan be used as a common ground for converting other bibliographic data\nsources.",
+  "description": null,
   "entities": {
     "http://purl.org/NET/c4dm/event.owl#Event": {
       "direct_parents": [],

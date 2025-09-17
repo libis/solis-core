@@ -217,6 +217,9 @@ class TestEntityLoad < Minitest::Test
 
     @stores.each do |store|
 
+      # NOTE: see test_entity_save.rb
+      next if store.repository.is_a?(RDF::Repository)
+
       puts store.run_operations(store.delete_all)
 
       data = JSON.parse %(

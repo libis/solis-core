@@ -34,7 +34,7 @@ class TestEntitySave < Minitest::Test
       store_1,
       store_2
     ]
-    # store_2.logger.level = Logger::DEBUG
+    store_2.logger.level = Logger::DEBUG
 
   end
 
@@ -341,6 +341,11 @@ class TestEntitySave < Minitest::Test
 
     @stores.each do |store|
 
+      # NOTE: RDFProxy on RDF::Repository.new does not work fully with list save
+      # (because of sparql-client, see https://github.com/ruby-rdf/sparql/issues/55).
+      # Hence, will skip the following for that store.
+      next if store.repository.is_a?(RDF::Repository)
+
       puts store.run_operations(store.delete_all)
 
       data = JSON.parse %(
@@ -352,7 +357,20 @@ class TestEntitySave < Minitest::Test
               "nice in the beginning ...",
               "... lesser nice to drive after all"
             ]
-          }
+          },
+          "extra_comments": {
+            "_list": [
+              "a",
+              "b",
+              "c"
+            ]
+          },
+          "owners": [
+            {
+              "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+              "name": "jon doe"
+            }
+          ]
         }
       )
 
@@ -367,14 +385,24 @@ class TestEntitySave < Minitest::Test
       puts store.as_repository.dump(:ntriples)
 
       str_ttl_truth = %(
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+        <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
         <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
         <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
         <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
-        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/comments> _:g185920 .
-        _:g185920 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "nice in the beginning ..." .
-        _:g185920 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:g185928 .
-        _:g185928 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "... lesser nice to drive after all" .
-        _:g185928 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/comments> _:nodeID_b10428 .
+        <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/extra_comments> _:nodeID_b10426 .
+        _:nodeID_b10427 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "... lesser nice to drive after all" .
+        _:nodeID_b10427 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+        _:nodeID_b10428 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "nice in the beginning ..." .
+        _:nodeID_b10428 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10427 .
+        _:nodeID_b10426 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "a" .
+        _:nodeID_b10426 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10425 .
+        _:nodeID_b10425 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "b" .
+        _:nodeID_b10425 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10424 .
+        _:nodeID_b10424 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "c" .
+        _:nodeID_b10424 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
       )
       graph_truth = RDF::Graph.new
       graph_truth.from_ttl(str_ttl_truth)
@@ -384,25 +412,60 @@ class TestEntitySave < Minitest::Test
       
       assert_equal(graph_truth.isomorphic_with?(graph_to_check), true)
 
-      # NOTE: uncomment following when list deletion in triple store works.
+      car.attributes.comments = JSON.parse %(
+        {
+          "_list": [
+            "bla bla 1",
+            "bla bla 2",
+            "bla bla 3"
+          ]
+        }
+      )
 
-      # car.attributes.comments = JSON.parse %(
-      #   {
-      #     "_list": [
-      #       "bla bla 1",
-      #       "bla bla 2",
-      #       "bla bla 3"
-      #     ]
-      #   }
-      # )
-      #
-      # puts car.to_pretty_pre_validate_jsonld
-      # puts car.valid?
-      #
-      # car.save
-      #
-      # puts "\n\nREPO CONTENT:\n\n"
-      # puts store.as_repository.dump(:ntriples)
+      car.attributes.extra_comments = JSON.parse %(
+        {
+          "_list": [
+            "d",
+            "e"
+          ]
+        }
+      )
+
+      puts car.to_pretty_pre_validate_jsonld
+      puts car.valid?
+
+      car.save
+
+      puts "\n\nREPO CONTENT:\n\n"
+      puts store.as_repository.dump(:ntriples)
+
+      str_ttl_truth = %(
+      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Person> .
+      <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> <https://example.com/name> "jon doe" .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/Car> .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "green" .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/color> "yellow" .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/owners> <https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9> .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/comments> _:nodeID_b10431 .
+      <https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be> <https://example.com/extra_comments> _:nodeID_b10430 .
+      _:nodeID_b10431 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "bla bla 1" .
+      _:nodeID_b10431 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10433 .
+      _:nodeID_b10433 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "bla bla 2" .
+      _:nodeID_b10433 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10432 .
+      _:nodeID_b10432 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "bla bla 3" .
+      _:nodeID_b10432 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+      _:nodeID_b10430 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "d" .
+      _:nodeID_b10430 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:nodeID_b10429 .
+      _:nodeID_b10429 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "e" .
+      _:nodeID_b10429 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+      )
+      graph_truth = RDF::Graph.new
+      graph_truth.from_ttl(str_ttl_truth)
+
+      graph_to_check = RDF::Graph.new(data: store.as_repository)
+      delete_metadata_from_graph(graph_to_check)
+
+      assert_equal(graph_truth.isomorphic_with?(graph_to_check), true)
 
     end
 
