@@ -8,10 +8,9 @@ require 'json'
 class JSONSchemaWriter < Solis::Model::Writer::Generic
   def self.write(repository, options = {})
     return "No repository provided" if repository.nil?
-    return "options[:entities] missing" unless options.key?(:entities)
 
-    # Copy in case some deep refs are updated
-    entities = Marshal.load(Marshal.dump(options[:entities]))
+    options[:raw] = true
+    entities = JSONEntitiesWriter.write(repository, options)[:entities]
 
     # If available, get list of entities sorted from independent to using other entities.
     # This is important for the uiSchema generation:
@@ -267,6 +266,24 @@ class JSONSchemaWriter < Solis::Model::Writer::Generic
 
     if property[:max_value]
       json_property["maximum"] = property[:max_value]
+    end
+
+    if property[:sorted]
+      json_property_list = {
+        "type" => "object",
+        "properties" => {
+          "@list" => json_property,
+        },
+        "required" => ["@list"],
+        "title" => "Ordered sequence",
+        "additionalProperties" => false
+      }
+      json_property = json_property_list
+      ui_schema_list = {
+        "ui:order" => ["@list"],
+        "@list" => ui_schema
+      }
+      ui_schema = ui_schema_list
     end
 
     [json_property, ui_schema]

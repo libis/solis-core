@@ -2,6 +2,7 @@
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix sh:     <http://www.w3.org/ns/shacl#> .
 @prefix dash:   <http://datashapes.org/dash#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 example:CarShape
     a sh:NodeShape;
@@ -30,10 +31,14 @@ example:CarShape
                           sh:name        "comments" ;
                           sh:description "Comments on the car" ;
                           sh:node        dash:ListShape; ];
-    sh:property     [ sh:path        example:extra_comments;
-                          sh:name        "extra_comments" ;
-                          sh:description "Extra comments on the car" ;
+    sh:property     [ sh:path        example:sequence_checks;
+                          sh:name        "sequence_checks;" ;
+                          sh:description "Sequence check IDs" ;
                           sh:node        dash:ListShape; ];
+    sh:property     [ sh:path        ( example:sequence_checks [ sh:zeroOrMorePath rdf:rest ] rdf:first ) ;
+                          sh:name        "sequence_checks_item" ;
+                          sh:description "Each sequence check ID" ;
+                          sh:datatype    xsd:integer ];
 .
 
 example:PersonShape

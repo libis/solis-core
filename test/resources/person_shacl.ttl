@@ -4,13 +4,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
+
 # PersonName shape
 ex:PersonNameShape
     a sh:NodeShape ;
     sh:description "Properties specific for a person's name" ;
     sh:targetClass ex:PersonName ;
     sh:name "PersonName" ;
-    sh:closed true ;
+    sh:closed false ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [
                     sh:path ex:firstName ;
@@ -31,7 +32,7 @@ ex:AgentShape
     a sh:NodeShape ;
     sh:description "Abstract shape that describes an agent entity" ;
     sh:targetClass ex:Agent ;
-    sh:closed true ;
+    sh:closed false ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:name "Agent" ;
     sh:property
@@ -58,7 +59,7 @@ ex:PersonShape
     sh:description "Person entity" ;
     sh:targetClass ex:Person ;
     sh:name "Person" ;
-    sh:closed true ;
+    sh:closed false ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property
         [
@@ -84,7 +85,7 @@ ex:OrganizationShape
     sh:targetClass ex:Organization ;
     sh:name "Organization" ;
     sh:node ex:AgentShape ;
-    sh:closed true ;
+    sh:closed false ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [
                     sh:path ex:name ;

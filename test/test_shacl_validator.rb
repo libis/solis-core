@@ -1525,6 +1525,9 @@ class TestSHACLValidator < Minitest::Test
   end
 
   def test_inherited_change_property
+
+    # NOTE: as explained in test_inherited_change_property_2, person_shacl.ttl is wrongly formed inside.
+
     Solis.config.path = 'test/resources/config'
 
     @shacl = File.read('test/resources/person_shacl.ttl')
@@ -1555,42 +1558,45 @@ class TestSHACLValidator < Minitest::Test
     #assert_kind_of(RDF::Literal::AnyURI, www)
     www = "http://example.org/abc"
     person_string = {
-      name: { firstName: "John", lastName: "Doe"},
-      website: www
+      "name" => { "firstName" => "John", "lastName" => "Doe"},
+      "website" => www
     }
 
     person_integer = {
-      name: 1,
-      website: www
+      "name" => 1,
+      "website" => www
     }
 
     good_person_entity = solis.model.entity.new('Person', person_string)
-    #    puts good_person_entity.to_pretty_pre_validate_jsonld
+    puts good_person_entity.to_pretty_jsonld
+    puts good_person_entity.to_pretty_pre_validate_jsonld
 
     bad_person_entity = solis.model.entity.new('Person', person_integer)
     #puts bad_person_entity.to_pretty_pre_validate_jsonld
 
-    validator = Solis::SHACLValidatorV2.new(person_shacl, :ttl, @opts)
-    conform, messages = validator.execute(JSON.parse(good_person_entity.to_pretty_jsonld), :jsonld)
-    puts good_person_entity.to_pretty_jsonld
-    puts JSON.pretty_generate(messages)
-    assert_equal(0, messages.size)
-    assert_equal(conform, true)
+    conform_literals, messages_literals, conform_shacl, messages_shacl = good_person_entity.validate
+    assert_equal(0, messages_literals.size)
+    assert_equal(0, messages_shacl.size)
+    assert_equal(conform_literals & conform_shacl, true)
 
-    conform, messages = validator.execute(JSON.parse(bad_person_entity.to_pretty_jsonld), :jsonld)
-    assert_equal(conform, false)
-    assert_equal(messages.size, 1)
-    assert_match("Value must be an instance of <https://example.com/PersonName>", messages[0])
+    conform_literals, messages_literals, conform_shacl, messages_shacl = bad_person_entity.validate
 
+    assert_equal(0, messages_literals.size)
+    assert_equal(1, messages_shacl.size)
+    assert_equal(conform_literals & conform_shacl, false)
+    assert_match("Value must be an instance of <https://example.com/PersonName>", messages_shacl[0])
 
     organization = {
-      name: "LIBIS",
-      website: "http://example.org"
+      "name" => "LIBIS",
+      "website" => "http://example.org"
     }
 
     organization_entity = solis.model.entity.new('Organization', organization)
 
+    puts organization_entity.to_pretty_pre_validate_jsonld
+
     conform_literals, messages_literals, conform_shacl, messages_shacl = organization_entity.validate
+    pp messages_literals
     pp messages_shacl
     assert_equal(conform_literals & conform_shacl, true)
 
@@ -2287,6 +2293,53 @@ class TestSHACLValidator < Minitest::Test
     validator = Solis::SHACLValidator.new(str_shacl_ttl, :ttl, @opts)
     conform, messages = validator.execute(hash_data_jsonld, :jsonld)
     assert_equal(conform, true)
+
+  end
+
+  def test_any_uri_property
+
+    str_shacl_ttl = %(
+      @prefix example: <https://example.com/> .
+      @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+      @prefix sh:     <http://www.w3.org/ns/shacl#> .
+
+      example:CarShape
+              a sh:NodeShape;
+              sh:description  "Abstract shape that describes a car entity" ;
+              sh:targetClass  example:Car;
+              sh:node         example:Car;
+              sh:name         "Car";
+              sh:property     [ sh:path        example:website;
+                                sh:name        "producer website" ;
+                                sh:description "Website of the car producer" ;
+                                sh:datatype    xsd:anyURI ;
+                                sh:minCount    1 ;
+                                sh:maxCount    1 ; ];
+      .
+    )
+
+    hash_data_jsonld = JSON.parse %(
+      {
+        "@context": {
+          "@vocab": "https://example.com/"
+        },
+        "@graph": [
+          {
+            "@id": "http://schema.org/my_car_1",
+            "@type": "Car",
+            "website": {
+              "@value": "http://example.org/abc",
+              "@type": "http://www.w3.org/2001/XMLSchema#anyURI"
+            }
+          }
+        ]
+      }
+    )
+
+    validator = Solis::SHACLValidator.new(str_shacl_ttl, :ttl, @opts)
+    conform, messages = validator.execute(hash_data_jsonld, :jsonld)
+    assert_equal(conform, true)
+    assert_equal(messages.size, 0)
 
   end
 

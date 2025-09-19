@@ -113,7 +113,6 @@ module Solis
         options[:uri] = "plantuml://#{@prefix}"
         Solis::Model::Writer.to_uri(options)
       when 'application/schema+json'
-        options[:entities] = writer('application/entities+json', raw: true)[:entities]
         options[:uri] = "jsonschema://#{@prefix}"
         Solis::Model::Writer.to_uri(options)
       when 'application/entities+json'
@@ -265,7 +264,7 @@ module Solis
       res = nil
       # first check directly in shape
       name_shape = Shapes.get_shape_for_class(@shapes, name_entity)
-      res = Shapes.get_property_class_for_shape(@shapes, name_shape, name_attr)
+      res = Shapes.get_property_class_for_shape_smart(@shapes, name_shape, name_attr)
       if res.nil?
         # otherwise navigate classes hierarchy up and try again
         names_entities_parents = get_parent_entities_for_entity(name_entity)
@@ -281,7 +280,7 @@ module Solis
       res = nil
       # first check directly in shape
       name_shape = Shapes.get_shape_for_class(@shapes, name_entity)
-      res = Shapes.get_property_datatype_for_shape(@shapes, name_shape, name_attr)
+      res = Shapes.get_property_datatype_for_shape_smart(@shapes, name_shape, name_attr)
       if res.nil?
         # otherwise navigate classes hierarchy up and try again
         names_entities_parents = get_parent_entities_for_entity(name_entity)
@@ -342,27 +341,50 @@ module Solis
       end
     end
 
+    # def make_dependencies
+    #   @dependencies = {}
+    #   append_to_deps = lambda do |name_entity, data_property, dependencies|
+    #     data_property[:constraints].each do |constraint|
+    #       info = constraint[:data]
+    #       if info.key?(:class)
+    #         dependencies[name_entity] << info[:class]
+    #       end
+    #       if info.key?(:or)
+    #         info[:or].each do |data_property_or|
+    #           append_to_deps.call(name_entity, data_property_or, dependencies)
+    #         end
+    #       end
+    #     end
+    #   end
+    #   entities = writer('application/entities+json', raw: true)[:entities]
+    #   entities.each do |name_entity, data_entity|
+    #     @dependencies[name_entity] = []
+    #     data_entity[:own_properties].each do |name_property|
+    #       data_property = data_entity[:properties][name_property]
+    #       append_to_deps.call(name_entity, data_property, @dependencies)
+    #     end
+    #     @dependencies[name_entity].uniq!
+    #   end
+    # end
+
     def make_dependencies
       @dependencies = {}
-      append_to_deps = lambda do |name_entity, data_property, dependencies|
-        data_property[:constraints].each do |constraint|
-          info = constraint[:data]
-          if info.key?(:class)
-            dependencies[name_entity] << info[:class]
-          end
-          if info.key?(:or)
-            info[:or].each do |data_property_or|
-              append_to_deps.call(name_entity, data_property_or, dependencies)
-            end
+      append_to_deps = lambda do |name_entity, property_shape|
+        constraints = property_shape[:constraints]
+        if constraints.key?(:class)
+          @dependencies[name_entity] << constraints[:class]
+        end
+        if constraints.key?(:or)
+          constraints[:or].each do |property_shape_or|
+            append_to_deps.call(name_entity, property_shape_or)
           end
         end
       end
-      entities = writer('application/entities+json', raw: true)[:entities]
-      entities.each do |name_entity, data_entity|
+      @shapes.each_value do |shape|
+        name_entity = shape[:target_class]
         @dependencies[name_entity] = []
-        data_entity[:own_properties].each do |name_property|
-          data_property = data_entity[:properties][name_property]
-          append_to_deps.call(name_entity, data_property, @dependencies)
+        shape[:properties].each_value do |property_shape|
+          append_to_deps.call(name_entity, property_shape)
         end
         @dependencies[name_entity].uniq!
       end

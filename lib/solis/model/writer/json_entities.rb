@@ -88,8 +88,10 @@ class JSONEntitiesWriter < Solis::Model::Writer::Generic
   def self.property_shapes_as_entity_properties(property_shapes)
     properties = {}
     property_shapes.each_value do |shape|
-      unless properties.key?(shape[:path])
-        properties[shape[:path]] = { constraints: [] }
+      next if Shapes.is_property_shape_for_list_container?(shape)
+      name_property = Shapes.extract_property_name_from_path(shape[:path])
+      unless properties.key?(name_property)
+        properties[name_property] = { constraints: [] }
       end
       constraints = deep_copy(shape[:constraints])
       if constraints.key?(:or)
@@ -100,10 +102,24 @@ class JSONEntitiesWriter < Solis::Model::Writer::Generic
           property_shapes_as_entity_properties(h).values[0]
         end
       end
-      properties[shape[:path]][:constraints] << {
+      properties[name_property][:constraints] << {
         description: shape[:description],
         data: constraints
       }
+    end
+    property_shapes.each_value do |shape|
+      next unless Shapes.is_property_shape_for_list_container?(shape)
+      name_property = Shapes.extract_property_name_from_path(shape[:path])
+      unless properties.key?(name_property)
+        properties[name_property] = {
+          constraints: [
+            {
+              data: {}
+            }
+          ]
+        }
+      end
+      properties[name_property][:constraints][0][:data][:sorted] = true
     end
     properties
   end
@@ -113,9 +129,9 @@ class JSONEntitiesWriter < Solis::Model::Writer::Generic
     names_shapes = Shapes.get_shapes_for_class(shapes, name_entity)
     names_shapes.each do |name_shape|
       property_shapes = deep_copy(shapes[name_shape][:properties])
-      list_properties.concat(property_shapes.values.map { |v| v[:path] })
+      list_properties.concat(property_shapes.values.map { |v| Shapes.extract_property_name_from_path(v[:path]) })
     end
-    list_properties
+    list_properties.uniq
   end
 
   def self.merge_info_entity_properties!(properties_1, properties_2)

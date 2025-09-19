@@ -240,6 +240,13 @@ module Solis
 
           return if union_members.empty?
 
+          # If the alternative is only between (ordered) sequences,
+          # don't add sh:or but just add a list node constraint
+          if union_members.to_set == [RDF.List, RDF.Seq].to_set
+            shacl_graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#/ListShape")]
+            return
+          end
+
           # Create sh:or constraint with multiple alternatives
           or_constraint_list = create_shacl_or_constraint(union_members, shacl_graph)
           shacl_graph << [property_shape, RDF::Vocab::SHACL.or, or_constraint_list]
