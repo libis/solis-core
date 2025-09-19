@@ -3,6 +3,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ns0: <https://libis.be/solis/metadata/db/locks/optimistic/> .
 @prefix ns1: <http://purl.org/NET/c4dm/event.owl#> .
+@prefix ns2: <http://datashapes.org/dash#/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -869,15 +870,11 @@ bibo:DocumentShape a shacl:NodeShape;
   skos:altLabel "documents";
   shacl:name "Document";
   shacl:property [
-    shacl:description "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.";
     shacl:name "authorList";
-    shacl:or ([
-        shacl:class rdf:List;
-        shacl:nodeKind shacl:IRI
-      ] [
-        shacl:class rdf:Seq;
-        shacl:nodeKind shacl:IRI
-      ]);
+    shacl:path (bibo:authorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
+  ], [
+    shacl:name "LIST(http://purl.org/ontology/bibo/authorList)";
+    shacl:node ns2:ListShape;
     shacl:path bibo:authorList
   ], [
     shacl:class bibo:Document;
@@ -895,26 +892,18 @@ another purpose.""";
     shacl:nodeKind shacl:IRI;
     shacl:path bibo:cites
   ], [
-    shacl:description "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.";
     shacl:name "contributorList";
-    shacl:or ([
-        shacl:class rdf:List;
-        shacl:nodeKind shacl:IRI
-      ] [
-        shacl:class rdf:Seq;
-        shacl:nodeKind shacl:IRI
-      ]);
+    shacl:path (bibo:contributorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
+  ], [
+    shacl:name "LIST(http://purl.org/ontology/bibo/contributorList)";
+    shacl:node ns2:ListShape;
     shacl:path bibo:contributorList
   ], [
-    shacl:description "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.";
     shacl:name "editorList";
-    shacl:or ([
-        shacl:class rdf:List;
-        shacl:nodeKind shacl:IRI
-      ] [
-        shacl:class rdf:Seq;
-        shacl:nodeKind shacl:IRI
-      ]);
+    shacl:path (bibo:editorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
+  ], [
+    shacl:name "LIST(http://purl.org/ontology/bibo/editorList)";
+    shacl:node ns2:ListShape;
     shacl:path bibo:editorList
   ], [
     shacl:class bibo:Event;

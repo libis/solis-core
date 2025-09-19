@@ -49,37 +49,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -96,68 +65,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -548,6 +455,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -568,37 +502,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -615,68 +518,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -1067,6 +908,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -1087,37 +955,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -1134,68 +971,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -1586,6 +1361,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -1616,37 +1418,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -1663,68 +1434,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -2115,6 +1824,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -2159,37 +1895,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -2206,68 +1911,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -2658,6 +2301,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -2678,37 +2348,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -2725,68 +2364,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -3177,6 +2754,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -3218,37 +2822,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -3265,68 +2838,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -3717,6 +3228,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -3761,37 +3299,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -3808,68 +3315,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -4260,6 +3705,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -4302,37 +3774,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -4349,68 +3790,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -4801,6 +4180,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -5136,37 +4542,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -5183,68 +4558,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -5635,6 +4948,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -6292,37 +5632,6 @@
       "direct_parents": [],
       "all_parents": [],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -6339,68 +5648,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -6791,6 +6038,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -6866,37 +6140,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -6913,68 +6156,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -7365,6 +6546,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -7410,37 +6618,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -7457,68 +6634,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -7909,6 +7024,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -7940,37 +7082,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -7987,68 +7098,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -8439,6 +7488,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -8494,37 +7570,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -8541,68 +7586,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -8993,6 +7976,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -9024,37 +8034,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -9071,68 +8050,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -9523,6 +8440,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -9569,37 +8513,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -9616,68 +8529,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -10068,6 +8919,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -10143,37 +9021,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -10190,68 +9037,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -10642,6 +9427,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -10990,37 +9802,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -11037,68 +9818,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -11489,6 +10208,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -11561,37 +10307,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -11608,68 +10323,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -12060,6 +10713,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -12104,37 +10784,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -12151,68 +10800,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -12603,6 +11190,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -12647,37 +11261,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -12694,68 +11277,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -13146,6 +11667,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -13177,37 +11725,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -13224,68 +11741,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -13676,6 +12131,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -14000,37 +12482,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -14047,68 +12498,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -14499,6 +12888,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -14519,37 +12935,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -14566,68 +12951,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -15018,6 +13341,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -15039,37 +13389,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -15086,68 +13405,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -15538,6 +13795,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -16167,37 +14451,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -16214,68 +14467,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -16666,6 +14857,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -16688,37 +14906,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -16735,68 +14922,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -17187,6 +15312,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -17577,37 +15729,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -17624,68 +15745,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -18076,6 +16135,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -18099,37 +16185,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -18146,68 +16201,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -18598,6 +16591,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -18630,37 +16650,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -18677,68 +16666,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -19129,6 +17056,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -19149,37 +17103,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -19196,68 +17119,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -19648,6 +17509,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -19668,37 +17556,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -19715,68 +17572,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -20167,6 +17962,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -20493,37 +18315,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -20540,68 +18331,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -20992,6 +18721,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -21022,37 +18778,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -21069,68 +18794,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -21521,6 +19184,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -21543,37 +19233,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -21590,68 +19249,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -22042,6 +19639,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -22063,37 +19687,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -22110,68 +19703,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -22562,6 +20093,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -22604,37 +20162,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -22651,68 +20178,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -23103,6 +20568,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -23133,37 +20625,6 @@
             }
           ]
         },
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -23180,68 +20641,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -23632,6 +21031,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]
@@ -23665,37 +21091,6 @@
         "http://purl.org/ontology/bibo/Document"
       ],
       "properties": {
-        "http://purl.org/ontology/bibo/authorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "http://purl.org/ontology/bibo/citedBy": {
           "constraints": [
             {
@@ -23712,68 +21107,6 @@
               "description": "Relates a document to another document that is cited\nby the first document as reference, comment, review, quotation or for\nanother purpose.",
               "data": {
                 "class": "http://purl.org/ontology/bibo/Document"
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/contributorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "http://purl.org/ontology/bibo/editorList": {
-          "constraints": [
-            {
-              "description": "An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.",
-              "data": {
-                "or": [
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "constraints": [
-                      {
-                        "description": null,
-                        "data": {
-                          "class": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
-                        }
-                      }
-                    ]
-                  }
-                ]
               }
             }
           ]
@@ -24164,6 +21497,33 @@
               "description": "Universal Resource Identifier of a document",
               "data": {
                 "datatype": "http://www.w3.org/2001/XMLSchema#string"
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/authorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/contributorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
+              }
+            }
+          ]
+        },
+        "http://purl.org/ontology/bibo/editorList": {
+          "constraints": [
+            {
+              "data": {
+                "sorted": true
               }
             }
           ]

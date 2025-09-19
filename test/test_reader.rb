@@ -5,7 +5,11 @@ class TestReader < Minitest::Test
     super
     Solis.config.path = 'test/resources/config'
 
-    @shacl = File.read('test/resources/car/car_shacl.ttl')
+  end
+
+  def test_read_from_stringio
+
+    shacl = File.read('test/resources/car/car_shacl.ttl')
 
     config = {
       cache_dir: '/tmp/cache',
@@ -13,16 +17,13 @@ class TestReader < Minitest::Test
       model: {
         prefix: 'e',
         namespace: 'https://example.com/',
-        uri: StringIO.new(@shacl),
+        uri: StringIO.new(shacl),
         content_type: 'text/turtle'
       }
     }
-    @solis = Solis.new(config)
+    solis = Solis.new(config)
 
-  end
-
-  def test_read_from_stringio
-    assert_includes(@solis.model.entity.all, 'Car')
+    assert_includes(solis.model.entity.all, 'Car')
   end
 
   def test_read_from_uri
@@ -161,6 +162,56 @@ class TestReader < Minitest::Test
     pp solis.model.version
     pp solis.model.version_counter
     pp solis.model.description
+    # pp solis.model.dependencies
+
+  end
+
+  def test_read_uri_bibo_ontology
+    config = {
+      store: Solis::Store::Memory.new(),
+      model: {
+        prefix: 'bibo',
+        namespace: 'http://purl.org/ontology/bibo/',
+        uri: "file://test/resources/bibo_owl.xml",
+        content_type: 'application/rdf+xml'
+      }
+    }
+    solis = Solis.new(config)
+    pp solis.model.title
+    pp solis.model.version
+    pp solis.model.version_counter
+    pp solis.model.description
+    # pp solis.model.dependencies
+
+    puts solis.model.graph.dump(:ttl, prefixes: solis.model.graph.extract_prefixes)
+
+  end
+
+  def test_convert_car_json_entities_to_shacl
+    graph = Solis::Model::Reader.from_uri({
+                                            uri: 'file://test/resources/car_entities.json',
+                                            content_type: 'application/json'
+                                          })
+    puts graph.dump(:ttl, prefixes: graph.extract_prefixes)
+  end
+
+  def test_read_from_car_json_entities
+    config = {
+      store: Solis::Store::Memory.new(),
+      model: {
+        prefix: 'ex',
+        namespace: 'http://example.org/',
+        uri: 'file://test/resources/car_entities.json',
+        content_type: 'application/json'
+      }
+    }
+    solis = Solis.new(config)
+
+    puts solis.model.graph.dump(:ttl, prefixes: solis.model.graph.extract_prefixes)
+    puts JSON.pretty_generate(solis.model.instance_variable_get(:@shapes))
+
+    puts JSON.pretty_generate(solis.model.writer('application/entities+json', raw: true))
+
   end
 
 end

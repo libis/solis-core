@@ -95,8 +95,6 @@ class CourtReporter << (S,#ADD1B2) >> {
 }
 
 class Document << (S,#ADD1B2) >> {
-  ' An ordered list of authors. Normally, this list is seen as a priority list that order authors by importance.
-  authorList : any
   ' Relates a document to another document that cites the
 first document.
   citedBy : Document
@@ -104,10 +102,6 @@ first document.
 by the first document as reference, comment, review, quotation or for
 another purpose.
   cites : Document
-  ' An ordered list of contributors. Normally, this list is seen as a priority list that order contributors by importance.
-  contributorList : any
-  ' An ordered list of editors. Normally, this list is seen as a priority list that order editors by importance.
-  editorList : any
   ' Relates a document to an event; for example, a paper to a conference.
   presentedAt : Event
   ' The resource in which another resource is reproduced.

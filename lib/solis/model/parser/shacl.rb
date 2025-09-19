@@ -90,7 +90,12 @@ class SHACLParser
 
   def extract_property_info(property_uri)
     property_name = shapes_graph.query([property_uri, RDF::Vocab::SHACL.name, nil]).first_object.to_s
-    property_path = shapes_graph.query([property_uri, RDF::Vocab::SHACL.path, nil]).first_object.to_s
+    property_path_obj = shapes_graph.query([property_uri, RDF::Vocab::SHACL.path, nil]).first_object
+    property_path = property_path_obj.to_s
+    if RDF::List.conforms_to?(shapes_graph, property_path_obj)
+      property_path_list = RDF::List.from_graph(shapes_graph, property_path_obj)
+      property_path = property_path_list.to_expanded_a(shapes_graph)
+    end
     property_info = { name: property_name, path: property_path, constraints: {} }
 
     shapes_graph.query([property_uri, RDF::Vocab::SHACL.description, nil]) do |max_count|
@@ -121,6 +126,10 @@ class SHACLParser
       property_info[:constraints][:class] = klass.object.to_s
     end
 
+    shapes_graph.query([property_uri, RDF::Vocab::SHACL.node, nil]) do |node|
+      property_info[:constraints][:node] = node.object.to_s
+    end
+
     shapes_graph.query([property_uri, RDF::Vocab::SHACL.or, nil]) do |or_|
       list_rdf = RDF::List.from_graph(shapes_graph, or_.object)
       property_info[:constraints][:or] = list_rdf.to_a.collect { |e| extract_property_info(e) }
@@ -137,8 +146,20 @@ module Shapes
     shapes.dig(name_shape, :properties, name_shape_property, :constraints, :datatype)
   end
 
+  def self.get_property_datatype_for_shape_smart(shapes, name_shape, name_property)
+    name_shape_property = get_property_shape_for_path_starting_with(shapes, name_shape, name_property)
+    name_shape_property = get_property_shape_for_path(shapes, name_shape, name_property) if name_shape_property.nil?
+    shapes.dig(name_shape, :properties, name_shape_property, :constraints, :datatype)
+  end
+
   def self.get_property_class_for_shape(shapes, name_shape, name_property)
     name_shape_property = get_property_shape_for_path(shapes, name_shape, name_property)
+    shapes.dig(name_shape, :properties, name_shape_property, :constraints, :class)
+  end
+
+  def self.get_property_class_for_shape_smart(shapes, name_shape, name_property)
+    name_shape_property = get_property_shape_for_path_starting_with(shapes, name_shape, name_property)
+    name_shape_property = get_property_shape_for_path(shapes, name_shape, name_property) if name_shape_property.nil?
     shapes.dig(name_shape, :properties, name_shape_property, :constraints, :class)
   end
 
@@ -180,8 +201,57 @@ module Shapes
     classes
   end
 
-  private_class_method def self.get_property_shape_for_path(shapes, name_shape, path)
+  def self.get_parent_classes_for_class(shapes, name_class)
+    names_classes_parents = []
+    names_shapes = get_shapes_for_class(shapes, name_class)
+    names_shapes.each do |name_shape|
+      names_nodes_parents = get_parent_shapes_for_shape(shapes, name_shape)
+      names_classes_parents += names_nodes_parents.map do |uri|
+        res = shapes.select { |k,v| v[:uri] == uri }
+        res[uri][:target_class] rescue nil
+      end.compact.uniq
+    end
+    names_classes_parents
+  end
+
+  def self.get_all_parent_classes_for_class(shapes, name_class)
+    list = [name_class]
+    idx = 0
+    while true
+      if idx >= list.length
+        break
+      end
+      list += get_parent_classes_for_class(shapes, list[idx])
+      idx += 1
+    end
+    list[1..].uniq
+  end
+
+  def self.get_property_shape_for_path(shapes, name_shape, path)
     shapes.dig(name_shape, :properties)&.select { |k, v| v[:path] == path }&.keys&.first
+  end
+
+  def self.get_property_shape_for_path_starting_with(shapes, name_shape, path)
+    shapes.dig(name_shape, :properties)&.select { |k, v| v[:path].is_a?(Array) && v[:path][0] == path }&.keys&.first
+  end
+
+  def self.extract_property_name_from_path(path)
+    return path[0] if is_path_for_list_items?(path)
+    path
+  end
+
+  def self.is_path_for_list_items?(path)
+    return false unless path.is_a?(Array)
+    return false unless path.size == 3
+    return false unless path[0].is_a?(String)
+    return false unless path[1].is_a?(Hash)
+    return false unless path[1][RDF::Vocab::SHACL.zeroOrMorePath.to_s].eql?(RDF.rest.to_s)
+    return false unless path[2].eql?(RDF.first.to_s)
+    true
+  end
+
+  def self.is_property_shape_for_list_container?(shape)
+    shape[:constraints][:node].eql?("http://datashapes.org/dash#/ListShape")
   end
 
 end

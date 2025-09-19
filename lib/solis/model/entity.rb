@@ -369,10 +369,6 @@ module Solis
         @model.get_shape_for_entity(Solis::Utils::JSONLD.expand_term(self.type, self.context))
       end
 
-      def get_properties_info
-        @model.get_properties_info_for_entity(Solis::Utils::JSONLD.expand_term(self.type, self.context))
-      end
-
       def to_pretty_jsonld
         hash_data_jsonld = to_jsonld(get_internal_data_as_jsonld)
         JSON.pretty_generate(hash_data_jsonld)

@@ -84,9 +84,10 @@ class OpenApiWriter < Solis::Model::Writer::Generic
 
       # Convert properties from hash to array format
       shape_data[:properties].each do |property_path, property_info|
+        next if Shapes.is_property_shape_for_list_container?(property_info)
         adapted_property = {
           name: property_info[:name],
-          path: property_info[:path],
+          path: Shapes.extract_property_name_from_path(property_info[:path]),
           description: property_info[:description],
           datatype: property_info.dig(:constraints, :datatype),
           min_count: property_info.dig(:constraints, :min_count),

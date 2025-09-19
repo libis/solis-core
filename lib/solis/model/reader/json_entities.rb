@@ -68,7 +68,12 @@ module Solis
                 property_shape = RDF::Node.new
                 shacl_graph << [shape, RDF::Vocab::SHACL.property, property_shape]
 
-                shacl_graph << [property_shape, RDF::Vocab::SHACL.path, RDF::URI.new(property_uri)]
+                if constraint['data']['sorted']
+                  shacl_graph << [shape, RDF::Vocab::SHACL.property, make_list_constraint(shacl_graph, property_uri)]
+                  shacl_graph << [property_shape, RDF::Vocab::SHACL.path, make_list_path(shacl_graph, property_uri)]
+                else
+                  shacl_graph << [property_shape, RDF::Vocab::SHACL.path, RDF::URI.new(property_uri)]
+                end
 
                 property_name = constraint['data']['name'] ||
                   Solis::Utils::String.extract_name_from_uri(property_uri)
@@ -123,6 +128,26 @@ module Solis
           shacl_graph << [node, RDF::Vocab::SHACL.nodeKind, RDF::Vocab::SHACL.IRI] if klass
           shacl_graph << [node, RDF::Vocab::SHACL.pattern, pattern] if pattern
 
+        end
+
+        def self.make_list_constraint(graph, property_uri)
+          property_shape = RDF::Node.new
+          graph << [property_shape, RDF::Vocab::SHACL.path, RDF::URI.new(property_uri)]
+          graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#/ListShape")]
+          name = "LIST(#{property_uri})"
+          graph << [property_shape, RDF::Vocab::SHACL.name, name]
+          property_shape
+        end
+
+        def self.make_list_path(graph, property_uri)
+          list = RDF::List.new
+          list << RDF::URI.new(property_uri)
+          bnode = RDF::Node.new
+          list << bnode
+          graph << [bnode, RDF::Vocab::SHACL.zeroOrMorePath, RDF::RDFV.rest]
+          list << RDF::RDFV.first
+          graph << list
+          list.subject
         end
 
       end

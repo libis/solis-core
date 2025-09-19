@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   # spec.add_dependency "abbrev", "~> 0.1"
   # spec.add_dependency "csv", "~> 3.3"
   # spec.add_dependency "mutex_m", "~> 0.3"
-  # spec.add_dependency "ostruct", "~> 0.6"
+  spec.add_dependency "ostruct", "~> 0.6"
   spec.add_dependency 'google_drive', '~> 3.0'
   # spec.add_dependency 'tsort', '~> 0.2.0'
   # spec.add_dependency 'securerandom', '~> 0.4.1'

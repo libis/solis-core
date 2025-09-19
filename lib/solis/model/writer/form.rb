@@ -23,7 +23,7 @@ class FormWriter
   def self.write(repository, options = {})
     # Merge options with defaults
     opts = DEFAULT_OPTIONS.merge(options)
-
+    
     json_schema = JSONSchemaWriter.write(repository, opts)
 
     # Parse schema if it's a string

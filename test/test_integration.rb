@@ -41,11 +41,7 @@ class TestIntegration < Minitest::Test
     # TODO: How to add multiple namespaces to the graph.
     # for example: SIOC references DC and FOAF the SHACL is generated correctly but the prefix does not contain a reference to these
 
-    post = @solis.model.entity.new('Post')
-    properties = post.get_properties_info.keys
-
     assert_includes(@solis.model.entity.all, "Post")
-    assert_includes(properties, 'http://rdfs.org/sioc/ns#title')
 
     data = {
       "title" => "Hello World",
