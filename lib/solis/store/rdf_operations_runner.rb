@@ -650,11 +650,13 @@ module Solis
                   has_pattern = @client_sparql.query(str_query_ask).true?
                   @logger.debug("has_pattern: #{has_pattern}")
                   if has_pattern
-                    str_query = create_delete_insert_where_query(clause_delete, insert['graph'], clause_where)
-                    @logger.debug("\n\nDELETE/INSERT QUERY:\n\n")
-                    @logger.debug(str_query)
-                    @logger.debug("\n\n")
-                    @client_sparql.update(str_query)
+                    str_queries = create_delete_insert_where_query(clause_delete, insert['graph'], clause_where, name_graph=nil, split_queries=true)
+                    str_queries.each_with_index do |str_query, i|
+                      @logger.debug("\n\nDELETE/INSERT QUERY #{i+1}:\n\n")
+                      @logger.debug(str_query)
+                      @logger.debug("\n\n")
+                      @client_sparql.update(str_query)
+                    end
                   end
                   report = { can_update: has_pattern }
                   report
@@ -822,7 +824,7 @@ module Solis
         list
       end
 
-      def create_delete_insert_where_query(clause_delete, graph_insert, clause_where, name_graph=nil)
+      def create_delete_insert_where_query(clause_delete, graph_insert, clause_where, name_graph=nil, split_queries=false)
         # rdf:List present some challenges in a DELETE/INSERT/WHERE query: it has blank nodes.
         # For the INSERT part, this hqs drawbacks, see here (from https://www.w3.org/TR/sparql11-update/):
         #
@@ -841,7 +843,7 @@ module Solis
         # 2) The second query handles only triples with blank nodes (e.g. rdf:List);
         # in its WHERE and DELETE clauses, only the single fictitious triple is used, while in the INSERT clause
         # the triples with blank nodes are included.
-        # The 2 queries are nox locked:
+        # The 2 queries are now locked:
         # When first query will insert, then the second query can insert (this time only once) as well.
         # When first query will not insert, then the second query cannot insert as well.
         graph_insert_std = RDF::Graph.new
@@ -854,6 +856,8 @@ module Solis
             graph_insert_std << statement
           end
         end
+        str_query_1 = ""
+        str_query_2 = ""
         str_query = ""
         unless name_graph.nil?
           str_query += "\nWITH <#{name_graph}>"
@@ -862,13 +866,23 @@ module Solis
           str_query += "\nDELETE { \n#{clause_delete} } INSERT { \n#{graph_insert.dump(:ntriples)} } WHERE { \n#{clause_where} \n}"
         else
           id_lock = "lock_#{SecureRandom.hex}"
-          statement_lock = [RDF::URI("#{name_graph}#{id_lock}"), RDF::URI("#{name_graph}locked"), true]
+          statement_lock = [RDF::URI("#{@name_graph}#{id_lock}"), RDF::URI("#{@name_graph}locked"), true]
           graph_where_bnodes << statement_lock
           graph_insert_std << statement_lock
-          str_query += "\nDELETE { \n#{clause_delete} } INSERT { \n#{graph_insert_std.dump(:ntriples)} } WHERE { \n#{clause_where} \n};"
-          str_query += "\nDELETE { \n#{graph_where_bnodes.dump(:ntriples)} } INSERT { \n#{graph_insert_bnodes.dump(:ntriples)} } WHERE { \n#{graph_where_bnodes.dump(:ntriples)} \n}"
+          str_query_1 += "\nDELETE { \n#{clause_delete} } INSERT { \n#{graph_insert_std.dump(:ntriples)} } WHERE { \n#{clause_where} \n};"
+          str_query += str_query_1
+          str_query_2 += "\nDELETE { \n#{graph_where_bnodes.dump(:ntriples)} } INSERT { \n#{graph_insert_bnodes.dump(:ntriples)} } WHERE { \n#{graph_where_bnodes.dump(:ntriples)} \n}"
+          str_query += str_query_2
         end
-        str_query
+        res = str_query
+        if split_queries
+          if graph_insert_bnodes.empty?
+            res = [str_query]
+          else
+            res = [str_query_1, str_query_2]
+          end
+        end
+        res
       end
 
     end
