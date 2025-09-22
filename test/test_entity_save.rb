@@ -34,6 +34,7 @@ class TestEntitySave < Minitest::Test
       store_1,
       store_2
     ]
+    # store_1.logger.level = Logger::DEBUG
     # store_2.logger.level = Logger::DEBUG
 
   end
@@ -341,11 +342,6 @@ class TestEntitySave < Minitest::Test
 
     @stores.each do |store|
 
-      # NOTE: RDFProxy on RDF::Repository.new does not work fully with list save
-      # (because of sparql-client, see https://github.com/ruby-rdf/sparql/issues/55).
-      # Hence, will skip the following for that store.
-      next if store.repository.is_a?(RDF::Repository)
-
       puts store.run_operations(store.delete_all)
 
       data = JSON.parse %(
@@ -411,6 +407,11 @@ class TestEntitySave < Minitest::Test
       delete_metadata_from_graph(graph_to_check)
 
       assert_equal(graph_truth.isomorphic_with?(graph_to_check), true)
+
+      # NOTE: RDFProxy on RDF::Repository.new does not work with list re-saving
+      # (because of sparql-client, see https://github.com/ruby-rdf/sparql/issues/55).
+      # Hence, will skip the following for that store.
+      next if store.repository.is_a?(RDF::Repository)
 
       car.attributes.comments = JSON.parse %(
         {
