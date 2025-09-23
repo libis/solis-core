@@ -251,7 +251,7 @@ module Shapes
   end
 
   def self.is_property_shape_for_list_container?(shape)
-    shape[:constraints][:node].eql?("http://datashapes.org/dash#/ListShape")
+    shape[:constraints][:node].eql?("http://datashapes.org/dash#ListShape")
   end
 
 end
