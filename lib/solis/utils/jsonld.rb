@@ -163,22 +163,39 @@ module Solis
       #   context
       # end
 
-      def self.make_jsonld_datatypes_context_from_model(obj, model, context)
+      def self.make_jsonld_attributes_context_from_model(obj, model, context)
         # NOTE: currently only meant for a _compacted_ JSON-LD object
-        context_datatypes = {}
+        context_attributes = {}
         type = obj['@type']
         type_expanded = expand_term(type, context)
         obj.each_key do |name_attr|
           next if RESERVED_FIELDS.include?(name_attr)
           name_attr_expanded = expand_term(name_attr, context)
           datatype = model.get_property_datatype_for_entity(type_expanded, name_attr_expanded)
-          context_datatypes[name_attr] = {
-            '@type' => datatype
-          } unless datatype.nil?
-
+          container = model.get_property_container_for_entity(type_expanded, name_attr_expanded)
+          context_attributes[name_attr] = {}
+          context_attributes[name_attr]['@type'] = datatype unless datatype.nil?
+          context_attributes[name_attr]['@container'] = "@#{container}" unless container.nil?
+          context_attributes.delete(name_attr) if context_attributes[name_attr].empty?
         end
-        context_datatypes
+        context_attributes
       end
+
+      # def self.make_jsonld_containers_context_from_model(obj, model, context)
+      #   # NOTE: currently only meant for a _compacted_ JSON-LD object
+      #   context_containers = {}
+      #   type = obj['@type']
+      #   type_expanded = expand_term(type, context)
+      #   obj.each_key do |name_attr|
+      #     next if RESERVED_FIELDS.include?(name_attr)
+      #     name_attr_expanded = expand_term(name_attr, context)
+      #     container = model.get_property_container_for_entity(type_expanded, name_attr_expanded)
+      #     context_containers[name_attr] = {
+      #       '@container' => "@#{container}"
+      #     } unless container.nil?
+      #   end
+      #   context_containers
+      # end
 
       def self.clean_flattened_expanded_from_unset_data!(flattened_expanded)
         flattened_expanded.each do |obj|

@@ -152,6 +152,16 @@ module Shapes
     shapes.dig(name_shape, :properties, name_shape_property, :constraints, :datatype)
   end
 
+  def self.get_property_container_for_shape(shapes, name_shape, name_property)
+    name_shape_property = get_property_shape_for_path(shapes, name_shape, name_property)
+    shape_property = shapes.dig(name_shape, :properties, name_shape_property)
+    res = nil
+    unless shape_property.nil?
+      res = 'list' if is_property_shape_for_list_container?(shape_property)
+    end
+    res
+  end
+
   def self.get_property_class_for_shape(shapes, name_shape, name_property)
     name_shape_property = get_property_shape_for_path(shapes, name_shape, name_property)
     shapes.dig(name_shape, :properties, name_shape_property, :constraints, :class)
