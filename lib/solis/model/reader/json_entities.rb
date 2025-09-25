@@ -133,7 +133,7 @@ module Solis
         def self.make_list_constraint(graph, property_uri)
           property_shape = RDF::Node.new
           graph << [property_shape, RDF::Vocab::SHACL.path, RDF::URI.new(property_uri)]
-          graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#/ListShape")]
+          graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#ListShape")]
           name = "LIST(#{property_uri})"
           graph << [property_shape, RDF::Vocab::SHACL.name, name]
           property_shape

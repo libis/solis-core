@@ -136,6 +136,7 @@ class TestWriter < Minitest::Test
     }})
     puts JSON.pretty_generate(s.model.dependencies)
     puts JSON.pretty_generate(s.model.context)
+    puts JSON.pretty_generate(s.model.shapes)
     File.open('./test/resources/bibo_shapes.ttl', 'wb') do |f|
       f.puts s.model.writer
     end

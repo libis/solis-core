@@ -740,4 +740,57 @@ class TestEntityBasic < Minitest::Test
 
   end
 
+  def test_entity_list
+
+    data = JSON.parse %(
+      {
+        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+        "color": ["green", "yellow"],
+        "brand": "toyota",
+        "owners": [
+          {
+            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+            "name": "jon doe",
+            "address": {
+              "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+              "street": "fake street"
+            }
+          }
+        ],
+        "sequence_checks": [1,2,3]
+      }
+    )
+
+    car = Solis::Model::Entity.new(data, @model, 'Car', nil)
+
+    puts car.to_pretty_pre_validate_jsonld
+
+    data = JSON.parse %(
+      {
+        "_id": "https://example.com/93b8781d-50de-47e2-a1dc-33cb641fd4be",
+        "color": ["green", "yellow"],
+        "brand": "toyota",
+        "owners": [
+          {
+            "_id": "https://example.com/dfd736c6-db76-44ed-b626-cdcec59b69f9",
+            "name": "jon doe",
+            "address": {
+              "_id": "https://example.com/3117582b-cdef-4795-992f-b62efd8bb1ea",
+              "street": "fake street"
+            }
+          }
+        ],
+        "sequence_checks": {
+          "_list": [1,2,3]
+        }
+      }
+    )
+
+    car = Solis::Model::Entity.new(data, @model, 'Car', nil)
+
+    puts car.to_pretty_pre_validate_jsonld
+
+
+  end
+
 end

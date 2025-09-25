@@ -109,10 +109,13 @@ module Solis
 
       def initialize(obj, model, type, store, hooks={})
 
-        # "obj" contains an extension of JSON-LD syntax.
+        # "obj" in very similar to JSON-Ld, but:
         # - '@' prefix can be replaced with '_';
-        # - non-native data types (integer, float, boolean) don't need to be given
-        #   the '@type' indication, since it will be autofilled from the model when existing;
+        # - object's @type, when skipped, will be inferred from the model;
+        # - embedded objects' @type, when skipped, will be inferred from the model;
+        # - literals' @type, when skipped, will be inferred from the model;
+        # - attributes' @container, when skipped, will be inferred from the model;
+        # It can have a custom @context.
 
         @attributes = OpenStruct.new
         @model = model
@@ -185,7 +188,6 @@ module Solis
         graph_data = RDF::Graph.new << JSON::LD::API.toRdf(flattened_ordered_expanded)
         conform_literals = graph_data.valid?
         messages_literals = []
-        #puts flattened_ordered_expanded.to_json
 
         graph_data.each do |statement|
           begin
@@ -478,14 +480,10 @@ module Solis
 
         @model.logger.debug("======= object:")
         @model.logger.debug(JSON.pretty_generate(obj))
-        context_datatypes = Solis::Utils::JSONLD.make_jsonld_datatypes_context_from_model(obj, @model, self.context)
+        context_attributes = Solis::Utils::JSONLD.make_jsonld_attributes_context_from_model(obj, @model, self.context)
 
-        # context = {
-        #   "@vocab" => @model.namespace
-        # }
-        # context.merge!(context_datatypes)
         context = deep_copy(self.context)
-        context.merge!(context_datatypes) if context.is_a?(Hash)
+        context.merge!(context_attributes) if context.is_a?(Hash)
 
         @model.logger.debug("======= compacted single object:")
         hash_jsonld_compacted = Solis::Utils::JSONLD.json_object_to_jsonld(obj, context)

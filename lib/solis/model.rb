@@ -184,6 +184,10 @@ module Solis
       _get_property_datatype_for_entity(name_entity, name_attr)
     end
 
+    def get_property_container_for_entity(name_entity, name_attr)
+      _get_property_container_for_entity(name_entity, name_attr)
+    end
+
     def get_parent_entities_for_entity(name_entity)
       _get_parent_entities_for_entity(name_entity)
     end
@@ -292,6 +296,22 @@ module Solis
       res
     end
 
+    def _get_property_container_for_entity(name_entity, name_attr)
+      res = nil
+      # first check directly in shape
+      name_shape = Shapes.get_shape_for_class(@shapes, name_entity)
+      res = Shapes.get_property_container_for_shape(@shapes, name_shape, name_attr)
+      if res.nil?
+        # otherwise navigate classes hierarchy up and try again
+        names_entities_parents = get_parent_entities_for_entity(name_entity)
+        names_entities_parents.each do |name_entity_parent|
+          next unless res.nil?
+          res = _get_property_container_for_entity(name_entity_parent, name_attr)
+        end unless names_entities_parents.nil?
+      end
+      res
+    end
+
     def _get_parent_entities_for_entity(name_entity)
       Shapes.get_parent_classes_for_class(@shapes, name_entity)
     end
@@ -340,32 +360,6 @@ module Solis
         @hierarchy_full[name_entity] = get_all_parent_entities_for_entity(name_entity)
       end
     end
-
-    # def make_dependencies
-    #   @dependencies = {}
-    #   append_to_deps = lambda do |name_entity, data_property, dependencies|
-    #     data_property[:constraints].each do |constraint|
-    #       info = constraint[:data]
-    #       if info.key?(:class)
-    #         dependencies[name_entity] << info[:class]
-    #       end
-    #       if info.key?(:or)
-    #         info[:or].each do |data_property_or|
-    #           append_to_deps.call(name_entity, data_property_or, dependencies)
-    #         end
-    #       end
-    #     end
-    #   end
-    #   entities = writer('application/entities+json', raw: true)[:entities]
-    #   entities.each do |name_entity, data_entity|
-    #     @dependencies[name_entity] = []
-    #     data_entity[:own_properties].each do |name_property|
-    #       data_property = data_entity[:properties][name_property]
-    #       append_to_deps.call(name_entity, data_property, @dependencies)
-    #     end
-    #     @dependencies[name_entity].uniq!
-    #   end
-    # end
 
     def make_dependencies
       @dependencies = {}

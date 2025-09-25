@@ -243,7 +243,7 @@ module Solis
           # If the alternative is only between (ordered) sequences,
           # don't add sh:or but just add a list node constraint
           if union_members.to_set == [RDF.List, RDF.Seq].to_set
-            shacl_graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#/ListShape")]
+            shacl_graph << [property_shape, RDF::Vocab::SHACL.node, RDF::URI("http://datashapes.org/dash#ListShape")]
             return
           end
 
