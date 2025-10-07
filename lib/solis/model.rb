@@ -29,7 +29,11 @@ module Solis
       @logger = params[:logger] || Solis.logger([STDOUT])
       @logger.level = Logger::INFO
       @graph = Solis::Model::Reader.from_uri(model)
-      @namespace = model[:namespace] || Solis::Utils::Namespace.detect_primary_namespace(@graph)
+      if model[:namespace].eql?('auto')
+        @namespace = _namespace_uri&.to_s
+      else
+        @namespace = model[:namespace] || Solis::Utils::Namespace.detect_primary_namespace(@graph)
+      end
       @prefix = model[:prefix] || Solis::Utils::PrefixResolver.resolve_prefix(@namespace)
       @context = {
         "@vocab" => @namespace
@@ -224,6 +228,10 @@ module Solis
 
     def _ontology
       @graph.query([nil, RDF.type, RDF::Vocab::OWL.Ontology])
+    end
+
+    def _namespace_uri
+      _ontology.first.subject
     end
 
     def _get_object_for_predicate(predicate, singleton = true)
