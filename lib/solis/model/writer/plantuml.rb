@@ -1,4 +1,5 @@
 require_relative 'generic'
+require_relative '../../utils/string'
 
 require 'rdf'
 require 'rdf/vocab'
@@ -107,7 +108,7 @@ class PlantUMLWriter < Solis::Model::Writer::Generic
         name: shape_data[:name],
         description: shape_data[:description],
         target_class: shape_data[:target_class],
-        node: shape_data[:nodes].first, # Take first node for inheritance relationship
+        nodes: shape_data[:nodes],
         properties: []
       }
 
@@ -135,10 +136,12 @@ class PlantUMLWriter < Solis::Model::Writer::Generic
   def self.add_relationships(plantuml, shapes)
     # Add inheritance relationships
     shapes.each do |shape_uri, shape_data|
-      if shape_data[:node] && shape_data[:node] != shape_uri
-        parent_class = get_class_name(shapes[shape_data[:node]]&.dig(:name) || extract_name_from_uri(shape_data[:node]))
-        child_class = get_class_name(shape_data[:name] || extract_name_from_uri(shape_uri))
-        plantuml << "#{parent_class} <|-- #{child_class} : inherits"
+      shape_data[:nodes].each do |shape_data_node|
+        if shape_data_node && shape_data_node != shape_uri
+          parent_class = get_class_name(shapes[shape_data_node]&.dig(:name) || extract_name_from_uri(shape_data_node))
+          child_class = get_class_name(shape_data[:name] || extract_name_from_uri(shape_uri))
+          plantuml << "#{parent_class} <|-- #{child_class} : inherits"
+        end
       end
     end
 
@@ -177,13 +180,7 @@ class PlantUMLWriter < Solis::Model::Writer::Generic
 
   # Extract a readable name from a URI
   def self.extract_name_from_uri(uri)
-    return "" unless uri
-    # Extract the last part of the URI (after the last # or /)
-    if uri.include?('#')
-      uri.split('#').last
-    else
-      uri.split('/').last
-    end
+    Solis::Utils::String.extract_name_from_uri(uri)
   end
 
   # Clean and format class names for PlantUML

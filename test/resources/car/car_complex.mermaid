@@ -1,0 +1,28 @@
+classDiagram
+  class Car {
+    color : String [*]
+    brand : String [Optional]
+    owners : any
+    sequence_checks : Integer
+  }
+  note for Car "Abstract shape that describes a car entity"
+  class ElectricDevice {
+    n_batteries : Integer [Required]
+  }
+  note for ElectricDevice "Abstract shape that describes a an electric device entity"
+  class ElectricCar {
+  }
+  note for ElectricCar "Abstract shape that describes a an electric car entity"
+  class Person {
+    name : String [Required]
+    address : any [Optional]
+  }
+  note for Person "Abstract shape that describes a person entity"
+  class Utils_Address {
+    street : String [Required]
+  }
+  note for Utils_Address "Abstract shape that describes an address"
+  ElectricDevice <|-- ElectricCar : inherits
+  Car <|-- ElectricCar : inherits
+  Car --o "*" Person : owners
+  Person --o "0..1" Utils_Address : address

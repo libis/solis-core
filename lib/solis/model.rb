@@ -41,12 +41,9 @@ module Solis
       context = {
         prefix => @namespace
       }
-      namespaces = Solis::Utils::Namespace.extract_unique_namespaces(@graph)
-      namespaces.each do |namespace|
-        next if namespace.eql?(@namespace)
-        prefix = Solis::Utils::PrefixResolver.resolve_prefix(namespace)
-        context[prefix] = namespace
-      end
+      prefixes = Solis::Utils::PrefixResolver.extract_prefixes(@graph)
+      prefixes.delete_if {|k, v| v.eql?(@namespace) }
+      context.merge!(prefixes)
       @context.merge!(context)
       @context_inv = context.invert
       @uri = model[:uri]

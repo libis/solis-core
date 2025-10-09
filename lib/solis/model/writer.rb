@@ -4,6 +4,7 @@ require_relative 'writer/json_schema'
 require_relative 'writer/json_entities'
 require_relative 'writer/form'
 require_relative 'writer/open_api'
+require_relative '../utils/prefix_resolver'
 
 module Solis
   class Model
@@ -67,32 +68,9 @@ module Solis
       end
       private
       def self.extract_prefixes(repository, prefix, namespace)
-        prefixes = {}
-        uris = []
-        repository.each_statement do |statement|
-          [statement.subject, statement.predicate, statement.object].each do |term|
-            if term.is_a?(RDF::URI)
-              # Extract potential prefix (everything before the last # or /)
-              uri_str = term.to_s
-              if uri_str =~ /(.*[#\/])([^#\/]+)$/
-                base_uri = $1
-                next if base_uri.eql?(namespace)
-
-                uris << base_uri unless uris.include?(base_uri)
-              end
-            end
-          end
-        end
-
-        anonymous_prefix_index = 0
-        uris.each do |prefix|
-          if RDF::URI(prefix).qname.nil?
-            prefixes["ns#{anonymous_prefix_index}".to_sym] = prefix
-            anonymous_prefix_index += 1
-          else
-            prefixes[RDF::URI(prefix).qname&.first] = prefix
-          end
-        end
+        prefixes = Solis::Utils::PrefixResolver.extract_prefixes(repository)
+        prefixes.delete_if {|k, v| v.eql?(namespace) }
+        prefixes.symbolize_keys!
         prefixes[prefix.to_sym] = namespace
         prefixes
       end
