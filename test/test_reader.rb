@@ -214,4 +214,21 @@ class TestReader < Minitest::Test
 
   end
 
+  def test_read_from_complex_shacl
+
+    config = {
+      cache_dir: '/tmp/cache',
+      store: Solis::Store::Memory.new(),
+      model: {
+        prefix: 'e',
+        namespace: 'https://example.com/',
+        uri: 'file://test/resources/car/car_shacl_complex.ttl',
+        content_type: 'text/turtle'
+      }
+    }
+    solis = Solis.new(config)
+    puts JSON.pretty_generate(solis.model.context)
+
+  end
+
 end

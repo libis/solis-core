@@ -1,0 +1,65 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classFontName Arial
+
+class Car << (S,#ADD1B2) SHACL >> {
+  ' Color of the car
+  color : String [*]
+  ' Brand of the car
+  brand : String [Optional]
+  ' Owners of the car
+  owners : Person
+  ' Each sequence check ID
+  sequence_checks : Integer
+}
+note bottom of Car
+  Abstract shape that describes a car entity
+end note
+
+class ElectricDevice << (S,#ADD1B2) SHACL >> {
+  ' Number of batteries
+  n_batteries : Integer [Required]
+}
+note bottom of ElectricDevice
+  Abstract shape that describes a an electric device entity
+end note
+
+class ElectricCar << (S,#ADD1B2) SHACL >> {
+}
+note bottom of ElectricCar
+  Abstract shape that describes a an electric car entity
+end note
+
+class Person << (S,#ADD1B2) SHACL >> {
+  ' Name of the person
+  name : String [Required]
+  ' Address of the person
+  address : Address [Optional]
+}
+note bottom of Person
+  Abstract shape that describes a person entity
+end note
+
+class Utils_Address << (S,#ADD1B2) SHACL >> {
+  ' Street of the address
+  street : String [Required]
+}
+note bottom of Utils_Address
+  Abstract shape that describes an address
+end note
+
+ElectricDevice <|-- ElectricCar : inherits
+Car <|-- ElectricCar : inherits
+Car "1" --* "*" Person : owners
+Person "1" --o "0..1" Utils_Address : address
+
+legend right
+  Created from SHACL definitions
+  [Required] = minCount >= 1
+  [Optional] = minCount = 0 or not specified
+  [*] = maxCount not specified or > 1
+end legend
+
+@enduml

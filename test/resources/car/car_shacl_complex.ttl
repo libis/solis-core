@@ -1,0 +1,107 @@
+# Complex maean it contains:
+# - multiple inheritance
+# - grouped entities
+# - sequences
+
+@prefix example:        <https://example.com/> .
+@prefix example-utils:  <https://example.com/utils/> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh:             <http://www.w3.org/ns/shacl#> .
+@prefix dc:             <http://purl.org/dc/elements/1.1/> .
+@prefix owl:            <http://www.w3.org/2002/07/owl#> .
+@prefix dash:           <http://datashapes.org/dash#> .
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+example: a owl:Ontology;
+    dc:title "Cars";
+    dc:creator "libis";
+    dc:description """This is an exmaple ontology for running SOLIS tests"""@en;
+    owl:versionInfo "1.0" .
+
+example:CarShape
+    a sh:NodeShape;
+    sh:description  "Abstract shape that describes a car entity" ;
+    sh:targetClass  example:Car;
+    sh:name         "Car";
+    sh:property     [ sh:path        example:color;
+                          sh:name        "color" ;
+                          sh:description "Color of the car" ;
+                          sh:datatype    xsd:string ;
+                          sh:minCount    1 ;
+                          sh:maxCount    3 ; ];
+    sh:property     [ sh:path        example:brand;
+                          sh:name        "brand" ;
+                          sh:description "Brand of the car" ;
+                          sh:datatype    xsd:string ;
+                          sh:minCount    0 ;
+                          sh:maxCount    1 ; ];
+    sh:property     [ sh:path        example:owners;
+                          sh:name        "owners" ;
+                          sh:description "Owners of the car" ;
+                          sh:nodeKind    sh:IRI ;
+                          sh:class       example:Person ;
+                          sh:minCount    0 ; ];
+    sh:property     [ sh:path        example:sequence_checks;
+                      sh:name        "sequence_checks" ;
+                      sh:description "Sequence check IDs" ;
+                      sh:node        dash:ListShape; ];
+    sh:property     [ sh:path        ( example:sequence_checks [ sh:zeroOrMorePath rdf:rest ] rdf:first ) ;
+                      sh:name        "sequence_checks" ;
+                      sh:description "Each sequence check ID" ;
+                      sh:datatype    xsd:integer ];
+.
+
+example:ElectricDeviceShape
+    a sh:NodeShape;
+    sh:description  "Abstract shape that describes a an electric device entity" ;
+    sh:targetClass  example:ElectricDevice;
+    sh:name         "ElectricDevice";
+    sh:property     [ sh:path        example:n_batteries;
+                      sh:name        "n_batteries" ;
+                      sh:description "Number of batteries" ;
+                      sh:datatype    xsd:integer ;
+                      sh:minCount    1 ;
+                      sh:maxCount    1 ; ];
+.
+
+example:ElectricCarShape
+    a sh:NodeShape;
+    sh:description  "Abstract shape that describes a an electric car entity" ;
+    sh:targetClass  example:ElectricCar;
+    sh:name         "ElectricCar";
+    sh:node         example:ElectricDeviceShape;
+    sh:node         example:CarShape;
+.
+
+example:PersonShape
+    a sh:NodeShape;
+    sh:description  "Abstract shape that describes a person entity" ;
+    sh:targetClass  example:Person;
+    sh:name         "Person";
+    sh:property     [ sh:path        example:name;
+                          sh:name        "name" ;
+                          sh:description "Name of the person" ;
+                          sh:datatype    xsd:string ;
+                          sh:minCount    1 ;
+                          sh:maxCount    1 ; ];
+    sh:property     [ sh:path        example:address;
+                          sh:name        "address" ;
+                          sh:description "Address of the person" ;
+                          sh:nodeKind    sh:IRI ;
+                          sh:class       example-utils:Address ;
+                          sh:minCount    0 ;
+                          sh:maxCount    1 ; ];
+.
+
+example-utils:AddressShape
+    a sh:NodeShape;
+    sh:description  "Abstract shape that describes an address" ;
+    sh:targetClass  example-utils:Address;
+    sh:name         "Utils:Address";
+    sh:property     [ sh:path        example:street;
+                          sh:name        "street" ;
+                          sh:description "Street of the address" ;
+                          sh:datatype    xsd:string ;
+                          sh:minCount    1 ;
+                          sh:maxCount    1 ; ];
+.

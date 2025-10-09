@@ -148,4 +148,32 @@ class TestWriter < Minitest::Test
     end
   end
 
+  def test_write_from_complex_model
+
+    config = {
+      cache_dir: '/tmp/cache',
+      store: Solis::Store::Memory.new(),
+      model: {
+        prefix: 'e',
+        namespace: 'https://example.com/',
+        uri: 'file://test/resources/car/car_shacl_complex.ttl',
+        content_type: 'text/turtle'
+      }
+    }
+    solis = Solis.new(config)
+
+    puts JSON.pretty_generate(solis.model.context)
+
+    puts JSON.pretty_generate(solis.model.shapes)
+    puts JSON.pretty_generate JSON.parse(solis.model.writer('application/entities+json'))
+    puts JSON.pretty_generate JSON.parse(solis.model.writer('application/schema+json'))
+    File.open('./test/resources/car/car_complex.puml', 'wb') do |f|
+      f.puts solis.model.writer('text/vnd.plantuml')
+    end
+    File.open('./test/resources/car/car_complex.mermaid', 'wb') do |f|
+      f.puts solis.model.writer('text/vnd.mermaid')
+    end
+
+  end
+
 end

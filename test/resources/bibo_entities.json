@@ -35,7 +35,7 @@
       "properties": {},
       "own_properties": [],
       "name": "Agent",
-      "prefix": "terms",
+      "prefix": "dc",
       "description": null,
       "plural": "agents",
       "snake_case_name": "agent"
@@ -21899,7 +21899,7 @@
         "http://purl.org/ontology/bibo/abstract"
       ],
       "name": "Resource",
-      "prefix": "rdfschema",
+      "prefix": "rdfs",
       "description": null,
       "plural": "resources",
       "snake_case_name": "resource"

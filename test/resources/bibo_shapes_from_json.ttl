@@ -1,9 +1,9 @@
 @prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix dash: <http://datashapes.org/dash#> .
 @prefix dc: <http://purl.org/dc/terms/> .
+@prefix event: <http://purl.org/NET/c4dm/event.owl#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix ns0: <https://libis.be/solis/metadata/db/locks/optimistic/> .
-@prefix ns1: <http://purl.org/NET/c4dm/event.owl#> .
-@prefix ns2: <http://datashapes.org/dash#> .
+@prefix libis_solis_metadata_db_locks_optimistic: <https://libis.be/solis/metadata/db/locks/optimistic/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -18,7 +18,7 @@ dc:AgentShape a shacl:NodeShape;
 
 bibo: dc:title "The Bibliographic Ontology";
   owl:versionInfo "http://purl.org/ontology/bibo/1.3/";
-  ns0:_version 0 .
+  libis_solis_metadata_db_locks_optimistic:_version 0 .
 
 bibo:AcademicArticleShape a shacl:NodeShape;
   skos:altLabel "academic_articles";
@@ -82,7 +82,7 @@ bibo:CodeShape a shacl:NodeShape;
 bibo:ConferenceShape a shacl:NodeShape;
   skos:altLabel "conferences";
   shacl:name "Conference";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:targetClass bibo:Conference .
 
 bibo:CourtReporterShape a shacl:NodeShape;
@@ -152,13 +152,13 @@ bibo:FilmShape a shacl:NodeShape;
 bibo:HearingShape a shacl:NodeShape;
   skos:altLabel "hearings";
   shacl:name "Hearing";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:targetClass bibo:Hearing .
 
 bibo:InterviewShape a shacl:NodeShape;
   skos:altLabel "interviews";
   shacl:name "Interview";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:targetClass bibo:Interview .
 
 bibo:IssueShape a shacl:NodeShape;
@@ -365,7 +365,7 @@ bibo:PatentShape a shacl:NodeShape;
 bibo:PerformanceShape a shacl:NodeShape;
   skos:altLabel "performances";
   shacl:name "Performance";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:property [
     shacl:class foaf:Agent;
     shacl:name "performer";
@@ -377,7 +377,7 @@ bibo:PerformanceShape a shacl:NodeShape;
 bibo:PersonalCommunicationShape a shacl:NodeShape;
   skos:altLabel "personal_communications";
   shacl:name "PersonalCommunication";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:targetClass bibo:PersonalCommunication .
 
 bibo:ProceedingsShape a shacl:NodeShape;
@@ -506,7 +506,7 @@ bibo:WebsiteShape a shacl:NodeShape;
 bibo:WorkshopShape a shacl:NodeShape;
   skos:altLabel "workshops";
   shacl:name "Workshop";
-  shacl:node ns1:EventShape;
+  shacl:node event:EventShape;
   shacl:targetClass bibo:Workshop .
 
 rdf:ListShape a shacl:NodeShape;
@@ -854,7 +854,7 @@ bibo:PeriodicalShape a shacl:NodeShape;
   ];
   shacl:targetClass bibo:Periodical .
 
-ns1:EventShape a shacl:NodeShape;
+event:EventShape a shacl:NodeShape;
   skos:altLabel "events";
   shacl:name "Event";
   shacl:property [
@@ -864,7 +864,7 @@ ns1:EventShape a shacl:NodeShape;
     shacl:nodeKind shacl:IRI;
     shacl:path bibo:organizer
   ];
-  shacl:targetClass ns1:Event .
+  shacl:targetClass event:Event .
 
 bibo:DocumentShape a shacl:NodeShape;
   skos:altLabel "documents";
@@ -874,7 +874,7 @@ bibo:DocumentShape a shacl:NodeShape;
     shacl:path (bibo:authorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
   ], [
     shacl:name "LIST(http://purl.org/ontology/bibo/authorList)";
-    shacl:node ns2:ListShape;
+    shacl:node dash:ListShape;
     shacl:path bibo:authorList
   ], [
     shacl:class bibo:Document;
@@ -896,14 +896,14 @@ another purpose.""";
     shacl:path (bibo:contributorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
   ], [
     shacl:name "LIST(http://purl.org/ontology/bibo/contributorList)";
-    shacl:node ns2:ListShape;
+    shacl:node dash:ListShape;
     shacl:path bibo:contributorList
   ], [
     shacl:name "editorList";
     shacl:path (bibo:editorList [shacl:zeroOrMorePath rdf:rest] rdf:first)
   ], [
     shacl:name "LIST(http://purl.org/ontology/bibo/editorList)";
-    shacl:node ns2:ListShape;
+    shacl:node dash:ListShape;
     shacl:path bibo:editorList
   ], [
     shacl:class bibo:Event;
